@@ -1,3 +1,5 @@
+// Create navbar
+
 export function navbar () {
     const navbox = document.createElement('div');
     navbox.innerHTML = `

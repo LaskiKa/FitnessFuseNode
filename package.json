@@ -18,6 +18,7 @@
     "webpack-dev-server": "^5.0.2"
   },
   "dependencies": {
+    "chart.js": "^4.4.2",
     "css-loader": "^6.10.0",
     "style-loader": "^3.3.4"
   }

@@ -59,7 +59,8 @@ nav {
 
 .basemodal {
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
+    /* justify-content: space-around; */
     margin: 1.2rem;
     border-radius: 0.5rem;
     max-width: 120rem;

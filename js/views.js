@@ -1,4 +1,5 @@
 // Views: Home, About, Contact, Weight, Steps, Caloreis, BASE MODAL
+import  Chart  from 'chart.js/auto'
 
 export function baseModal(row) {
 
@@ -48,10 +49,23 @@ export function contactFunction(row) {
 };
 
 export function weightFunction(row) {
+
+    const modalArray = [];
     
     const weightModal = baseModal(row);
     weightModal.firstChild.classList.add('weightmodal')
     weightModal.firstChild.textContent = "WEIGHT MODAL"
+
+    // Chart
+    const chartModal = baseModal(row);
+    chartModal.firstChild.classList.add('chartmodal');
+    chartModal.firstChild.textContent = "CHART MODAL"
+
+    const canvas = document.createElement('canvas');
+    canvas.classList.add('canvas');
+    canvas.setAttribute('id', 'canvas'); // canvas chart id
+
+    chartModal.firstChild.appendChild(canvas);
 
     // GET WEIGHT DATA
     const getWeight = async () => {
@@ -68,8 +82,24 @@ export function weightFunction(row) {
         // Response verification
         if (response.ok) {
             const weightdata = await response.json()
-            console.log('weight data: ', weightdata);
             
+            // CREATE CHART
+            new Chart(
+                chartModal.querySelector('#canvas'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: weightdata.map(row => row.measurement_date),
+                        datasets: [
+                            {
+                                label: 'Weight by date',
+                                data: weightdata.map(row => row.weight)
+                            }
+                        ]
+                    }
+                }
+            );
+
         } else {
             // Error
             const error = await response.json();
@@ -77,20 +107,35 @@ export function weightFunction(row) {
         }
     };
     
-    // Get weight data after pressing weight navbtn
+    // Get weight data after clicking weight navbtn
     document.querySelector('.navbtn.weight').addEventListener('click', () => {
         getWeight();
     })
+
+    modalArray.push(weightModal, chartModal);
     
-    return weightModal
+    return modalArray
 };
 
 export function caloriesFunction(row) {
+    
+    const modalArray = [];
     
     const caloriesModal = baseModal(row);
     caloriesModal.firstChild.classList.add('caloriesmodal')
     caloriesModal.firstChild.textContent = "CALORIES MODAL"
 
+    // Chart
+    const chartModal = baseModal(row);
+    chartModal.firstChild.classList.add('chartmodal');
+    chartModal.firstChild.textContent = "CHART MODAL"
+
+    const canvas = document.createElement('canvas');
+    canvas.classList.add('canvas');
+    canvas.setAttribute('id', 'canvas'); // canvas chart id
+
+    chartModal.firstChild.appendChild(canvas);
+    
     // GET CALORIES DATA
     const getCalories = async () => {
         const token = sessionStorage.getItem('token')
@@ -106,7 +151,23 @@ export function caloriesFunction(row) {
         // Response verification
         if (response.ok) {
             const caloriesdata = await response.json()
-            console.log('calories data: ', caloriesdata);
+
+            // CREATE CHART
+            new Chart(
+                chartModal.querySelector('#canvas'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: caloriesdata.map(row => row.measurement_date),
+                        datasets: [
+                            {
+                                label: 'Burned calories by date',
+                                data: caloriesdata.map(row => row.kcal)
+                            }
+                        ]
+                    }
+                }
+            );
             
         } else {
             // Error
@@ -119,15 +180,31 @@ export function caloriesFunction(row) {
     document.querySelector('.navbtn.calories').addEventListener('click', () => {
         getCalories();
     })
+
+    modalArray.push(caloriesModal, chartModal);
     
-    return caloriesModal
+    return modalArray
 };
 
 export function stepsFunction(row) {
     
+    const modalArray = [];
+
     const stepsModal = baseModal(row);
     stepsModal.firstChild.classList.add('stepsmodal')
     stepsModal.firstChild.textContent = "STEPS MODAL"
+
+    // Chart
+    const chartModal = baseModal(row);
+    chartModal.firstChild.classList.add('chartmodal');
+    chartModal.firstChild.textContent = "CHART MODAL"
+
+    const canvas = document.createElement('canvas');
+    canvas.classList.add('canvas');
+    canvas.setAttribute('id', 'canvas'); // ID canvasa - tutaj zmiana
+
+    chartModal.firstChild.appendChild(canvas);
+
 
     // GET CALORIES DATA
     const getSteps = async () => {
@@ -144,7 +221,23 @@ export function stepsFunction(row) {
         // Response verification
         if (response.ok) {
             const stepsdata = await response.json()
-            console.log('steps data: ', stepsdata);
+
+            // CREATE CHART
+            new Chart(
+                chartModal.querySelector('#canvas'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: stepsdata.map(row => row.measurement_date),
+                        datasets: [
+                            {
+                                label: 'Steps by date',
+                                data: stepsdata.map(row => row.steps)
+                            }
+                        ]
+                    }
+                }
+            );
             
         } else {
             // Error
@@ -153,10 +246,12 @@ export function stepsFunction(row) {
         }
     };
     
-    // Get weight data after pressing weight navbtn
+    // Get steps data after clicking steps navbtn
     document.querySelector('.navbtn.steps').addEventListener('click', () => {
         getSteps();
     })
+
+    modalArray.push(stepsModal, chartModal);
     
-    return stepsModal
+    return modalArray
 };

@@ -26,7 +26,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!this.querySelector('.basemodal.homemodal')) {
         // If the home modal not exist -> show the home modal
-            this.querySelector('.basemodal').parentElement.remove();
+            this.querySelectorAll('.basemodal').forEach((element) => {
+                element.parentElement.remove();
+            });
             container.append(home);
         } else {
             container.append(home);
@@ -39,7 +41,9 @@ document.addEventListener('DOMContentLoaded', function () {
     this.querySelector('.navbtn.about').addEventListener('click', () => {
         // If the about modal not exist -> show the about modal
         if (!this.querySelector('.basemodal.aboutmodal')) {
-            this.querySelector('.basemodal').parentElement.remove();
+            this.querySelectorAll('.basemodal').forEach((element) => {
+                element.parentElement.remove();
+            });
             container.append(about);
         };
     });
@@ -50,7 +54,9 @@ document.addEventListener('DOMContentLoaded', function () {
     this.querySelector('.navbtn.contact').addEventListener('click', () => {
         // If the contact modal not exist -> show the contact modal
         if (!this.querySelector('.basemodal.contactmodal')) {
-            this.querySelector('.basemodal').parentElement.remove();
+            this.querySelectorAll('.basemodal').forEach((element) => {
+                element.parentElement.remove();
+            });
             container.append(contact);
         };
     });   
@@ -76,9 +82,14 @@ if (sessionStorage.getItem('token')) {
     this.querySelector('.navbtn.weight').addEventListener('click', () => {
         // If the contact modal not exist -> show the contact modal
         if (!this.querySelector('.basemodal.weightmodal')) {
-            this.querySelector('.basemodal').parentElement.remove();
-            container.append(weight);
-            // container.append(contact);
+            this.querySelectorAll('.basemodal').forEach((element) => {
+                element.parentElement.remove();
+            });
+
+            // Append container with weight elements
+            weight.forEach((element) => {
+                container.append(element);
+            });
         };
     }); 
 
@@ -88,19 +99,31 @@ if (sessionStorage.getItem('token')) {
     this.querySelector('.navbtn.calories').addEventListener('click', () => {
         // If the contact modal not exist -> show the contact modal
         if (!this.querySelector('.basemodal.caloriesmodal')) {
-            this.querySelector('.basemodal').parentElement.remove();
-            container.append(calories);
+            this.querySelectorAll('.basemodal').forEach((element) => {
+                element.parentElement.remove();
+            });
+            // Append container with calories elements
+            calories.forEach((element) => {
+                container.append(element);
+            });
         };
     }); 
 
     // STEPS
 
     const steps = stepsFunction(true);
+
     this.querySelector('.navbtn.steps').addEventListener('click', () => {
         // If the steps modal not exist -> show the steps modal
         if (!this.querySelector('.basemodal.stepsmodal')) {
-            this.querySelector('.basemodal').parentElement.remove();
-            container.append(steps);
+            this.querySelectorAll('.basemodal').forEach((element) => {
+                element.parentElement.remove();
+            });
+
+            // Append container with steps elements
+            steps.forEach((element) => {
+                container.append(element);
+            });
         };
     });     
 };

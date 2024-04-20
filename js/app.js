@@ -80,7 +80,7 @@ if (sessionStorage.getItem('token')) {
 
     const weight = weightFunction(true);
     this.querySelector('.navbtn.weight').addEventListener('click', () => {
-        // If the contact modal not exist -> show the contact modal
+        // If the weight modal not exist -> show the contact modal
         if (!this.querySelector('.basemodal.weightmodal')) {
             this.querySelectorAll('.basemodal').forEach((element) => {
                 element.parentElement.remove();

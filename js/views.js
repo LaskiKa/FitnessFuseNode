@@ -1,11 +1,20 @@
 // Views: Home, About, Contact, Weight, Steps, Caloreis, BASE MODAL
 import  Chart  from 'chart.js/auto'
 
+function today() {
+    const now = [];
+    const date = new Date();
+    now.push(date.toISOString().split('T')[0]);
+    now.push(date.toLocaleTimeString());
+
+    return now
+}
+
 export function baseModal(row) {
 
     const modalbase = document.createElement('div');
     modalbase.classList.add('basemodal');
-    modalbase.textContent = "Base modal"
+    // modalbase.textContent = "Base modal"
     
     
     if (row) {
@@ -50,16 +59,135 @@ export function contactFunction(row) {
 
 export function weightFunction(row) {
 
+    const now = today();
     const modalArray = [];
     
+    // Weight manage consloe: update, create, delete\
+
     const weightModal = baseModal(row);
     weightModal.firstChild.classList.add('weightmodal')
-    weightModal.firstChild.textContent = "WEIGHT MODAL"
 
-    // Chart
+    // WEIGHT MANAGE: update, create, delete
+    const manageModal = document.createElement('div');
+    manageModal.classList.add('managemodal');
+
+        // WEIGHT MANAGE: UPDATE
+    const update = document.createElement('div');
+    update.classList.add('manage', 'update');
+    update.textContent='update';
+
+
+    update.addEventListener('click', () => {
+        // Rozwiń pole poniżej do edycji
+        // Dodaj formularz do edycji
+        // Dodaj pole rozwijane z dostępnymi pomiarami
+        const managecontent = document.createElement('div');
+        managecontent.classList.add('managecontent', 'update');
+        managecontent.textContent = 'MANAGE UPDATE';
+
+        if (!document.querySelector('.managecontent.update')) {
+            // If the .managecontent.update not exist -> show the managecontetn update modal
+            document.querySelectorAll('.managecontent').forEach((element) => {
+                element.remove();
+            });            
+            document.querySelector('.weightmodal').append(managecontent);
+        };
+
+
+    });
+
+    // WEIGHT MANAGE: CREATE
+    const create = document.createElement('div');
+    create.classList.add('manage','create');
+    create.textContent='create';
+
+    create.addEventListener('click', () => {
+        // Rozwiń pole poniżej do edycji
+        // Dodaj formularz do edycji
+        // Dodaj pole rozwijane z dostępnymi pomiarami
+        const managecontent = document.createElement('div');
+        managecontent.classList.add('managecontent', 'create');
+
+        const formmodal = document.createElement('div');
+        formmodal.classList.add('formmodal');
+
+        const createform = document.createElement('form');
+        createform.classList.add('form', 'create');
+        createform.innerHTML = `
+        <label>Weight:</label>
+        <input type="number" id="weight" required>
+
+        <label>Measurement date:</label>
+        <input type="date" id="measurement_date" required>
+
+        <label>Measurement time:</label>
+        <input type="time" id="measurement_time" required>
+        
+        <input type="button" value="Add">
+        <button type="submit">Submit</button>
+
+        `
+        console.log(now[0]);
+        createform.querySelector('#measurement_date').value = now[0];
+        createform.querySelector('#measurement_time').value = now[1];
+        
+
+        formmodal.appendChild(createform);
+        managecontent.appendChild(formmodal);
+        
+
+        if (!document.querySelector('.managecontent.create')) {
+            // If the .managecontent.update not exist -> show the managecontetn update modal
+            document.querySelectorAll('.managecontent').forEach((element) => {
+                element.remove();
+            });
+            document.querySelector('.weightmodal').append(managecontent);
+        };
+
+        // TU SKOŃCZYŁEM - UTWORZYĆ KOD KTÓRY WYŚLE DANE METODĄ POST DO API I DODA NOWĄ WAGĘ
+        // 
+        // 
+        // 
+        // 
+
+
+
+    });
+
+    // WEIGHT MANAGE: delete
+    const deletedata = document.createElement('div');
+    deletedata.classList.add('manage', 'deletedata');
+    deletedata.textContent='delete';
+
+    deletedata.addEventListener('click', () => {
+        // Rozwiń pole poniżej do edycji
+        // Dodaj formularz do edycji
+        // Dodaj pole rozwijane z dostępnymi pomiarami
+        const managecontent = document.createElement('div');
+        managecontent.classList.add('managecontent', 'deletedata');
+        managecontent.textContent = 'MANAGE DELETE DATA';
+
+        if (!document.querySelector('.managecontent.deletedata')) {
+            // If the .managecontent.update not exist -> show the managecontetn update modal
+            document.querySelectorAll('.managecontent').forEach((element) => {
+                element.remove();
+            });
+            document.querySelector('.weightmodal').append(managecontent);
+        };
+
+
+    });
+
+    // Append UPDATE CREATE DELETE
+    manageModal.appendChild(update);
+    manageModal.appendChild(create);
+    manageModal.appendChild(deletedata);
+    weightModal.firstChild.appendChild(manageModal);
+
+    // CHART
     const chartModal = baseModal(row);
     chartModal.firstChild.classList.add('chartmodal');
-    chartModal.firstChild.textContent = "CHART MODAL"
+    // chartModal.firstChild.textContent = "CHART MODAL"
 
     const canvas = document.createElement('canvas');
     canvas.classList.add('canvas');
@@ -122,7 +250,7 @@ export function caloriesFunction(row) {
     const modalArray = [];
     
     const caloriesModal = baseModal(row);
-    caloriesModal.firstChild.classList.add('caloriesmodal')
+    caloriesModal.firstChild.classList.add('managemodal', 'caloriesmodal')
     caloriesModal.firstChild.textContent = "CALORIES MODAL"
 
     // Chart
@@ -191,7 +319,7 @@ export function stepsFunction(row) {
     const modalArray = [];
 
     const stepsModal = baseModal(row);
-    stepsModal.firstChild.classList.add('stepsmodal')
+    stepsModal.firstChild.classList.add('managemodal', 'stepsmodal')
     stepsModal.firstChild.textContent = "STEPS MODAL"
 
     // Chart

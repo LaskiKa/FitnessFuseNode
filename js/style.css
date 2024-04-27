@@ -66,9 +66,7 @@ nav {
     border-radius: 0.5rem;
     max-width: 120rem;
     width: 55rem;
-    -webkit-box-shadow: 8px 8px 24px 0px rgba(66, 68, 90, 1);
-    -moz-box-shadow: 8px 8px 24px 0px rgba(66, 68, 90, 1);
-    box-shadow: 8px 8px 24px 0px rgba(66, 68, 90, 1);
+    box-shadow: 0px 5px 15px 1px rgba(66, 68, 90, 1);
 
 }
 
@@ -124,9 +122,9 @@ nav {
 
 .formmodal {
     display: flex;
-    width: 50%;
+    min-width: 50%;
     border-radius: 1rem;
-    box-shadow: 0px 0px 10px 2px rgba(66, 68, 90, 1);
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.6);
     margin: 1rem;
 
 }
@@ -138,7 +136,7 @@ form {
     margin: 0.5rem;
 }
 select {
-    margin: 0.4rem;
+    margin-block: 0.4rem;
 }
 
 input {
@@ -150,8 +148,6 @@ label {
 }
 
 button {
-    background-color: #53d753;
-    color: white;
     border: none;
     height: 2rem;
     font-size: 1rem;
@@ -161,7 +157,7 @@ button {
 }
 
 button#submit {
-    background-color: #53d753;
+    background-color: #00b200;
     color: white; 
 }
 

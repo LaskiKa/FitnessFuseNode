@@ -137,6 +137,9 @@ form {
     width: 100%;
     margin: 0.5rem;
 }
+select {
+    margin: 0.4rem;
+}
 
 input {
     margin-block: 0.4rem;
@@ -146,4 +149,52 @@ label {
     margin: 0.1rem;
 }
 
+button {
+    background-color: #53d753;
+    color: white;
+    border: none;
+    height: 2rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 1rem;
+    margin: 0.2rem;
+}
 
+button#submit {
+    background-color: #53d753;
+    color: white; 
+}
+
+button#delete {
+    background-color: #c43030;
+    color: white;
+}
+
+
+
+button:hover {
+    transform: scale(1.02);
+
+}
+
+.infomodal{
+    display: flex;
+    justify-content: center;
+    margin: 1rem;
+    margin-top: 1rem;
+    border-radius: 0.5rem;
+}
+
+.infomodal.success{
+    background-color: #53d753;
+    color: white;
+
+}
+
+.infocontent {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 0.1rem;
+    border-radius: 0.4rem;
+}

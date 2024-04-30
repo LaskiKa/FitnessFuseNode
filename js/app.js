@@ -18,7 +18,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // HOME
 
     const home = homeFunction(true);
-    container.append(home);
+    
+    home.forEach(element => {
+        container.append(element);
+    });
 
             // Home navbar logic
     const homenavbtn = this.querySelector('.navbtn.home');
@@ -29,9 +32,13 @@ document.addEventListener('DOMContentLoaded', function () {
             this.querySelectorAll('.basemodal').forEach((element) => {
                 element.parentElement.remove();
             });
-            container.append(home);
+            home.forEach(element => {
+                container.append(element);
+            })
         } else {
-            container.append(home);
+            home.forEach(element => {
+                container.append(element)
+            });
         };
     });
 

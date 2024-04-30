@@ -1,5 +1,6 @@
 // Views: Home, About, Contact, Weight, Steps, Caloreis, BASE MODAL
-import  Chart  from 'chart.js/auto'
+import  Chart, { LineElement }  from 'chart.js/auto';
+// import { textContent } from "./static/textcontent.json";
 
 function today() {
     const now = [];
@@ -14,7 +15,6 @@ export function baseModal(row) {
 
     const modalbase = document.createElement('div');
     modalbase.classList.add('basemodal');
-    // modalbase.textContent = "Base modal"
     
     
     if (row) {
@@ -29,12 +29,33 @@ export function baseModal(row) {
 };
 
 export function homeFunction(row) {
-    
+    const modalArray = [];
+
+    const textContent = require('./static/textcontent.json');
     const homeModal = baseModal(row);
     homeModal.firstChild.classList.add('homemodal')
-    homeModal.firstChild.textContent = "HOME MODAL"
 
-    return homeModal
+    const logoImage = document.createElement('img');
+    logoImage.setAttribute('id', 'imglogomodal');
+    logoImage.src = 'js/static/FitnessFuselogo_wide.png'
+
+    const descriptionModal = baseModal(row)
+    descriptionModal.firstChild.classList.add('descriptionmodal');
+    
+    const descriptionContent = document.createElement('div');
+
+
+    descriptionContent.setAttribute('id', 'descricontent');
+
+    descriptionContent.innerText = textContent.homepage.description;
+    descriptionModal.firstChild.appendChild(descriptionContent);
+
+
+    homeModal.firstChild.appendChild(logoImage);
+
+    modalArray.push(homeModal, descriptionModal)
+
+    return modalArray
 };
 
 export function aboutFunction(row) {
@@ -527,13 +548,24 @@ export function weightFunction(row) {
             window.dataChart = new Chart(
                 chartModal.querySelector('#canvas'),
                 {
-                    type: 'bar',
+                    type: 'line',
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                
+                            }
+                        },
+                    },
                     data: {
                         labels: sortedweightdata.map(row => row.measurement_date),
                         datasets: [
                             {
                                 label: 'Weight by date',
-                                data: sortedweightdata.map(row => row.weight)
+                                data: sortedweightdata.map(row => row.weight),
+                                backgroundColor: '#4d3ef9',
+                                borderColor: '#4d3ef9'
                             }
                         ]
                     }
@@ -1028,13 +1060,23 @@ export function caloriesFunction(row) {
             window.dataChart = new Chart(
                 chartModal.querySelector('#canvas'),
                 {
-                    type: 'bar',
+                    type: 'line',
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                            }
+                        },
+                    },
                     data: {
                         labels: sortedcaloriesdata.map(row => row.measurement_date),
                         datasets: [
                             {
                                 label: 'Burned calories by date',
-                                data: sortedcaloriesdata.map(row => row.kcal)
+                                data: sortedcaloriesdata.map(row => row.kcal),
+                                backgroundColor: '#4d3ef9',
+                                borderColor: '#4d3ef9'
                             }
                         ]
                     }
@@ -1530,12 +1572,17 @@ export function stepsFunction(row) {
                 chartModal.querySelector('#canvas'),
                 {
                     type: 'bar',
+                    options: {
+                        responsive: true,
+                    },
                     data: {
                         labels: sortedstepsdata.map(row => row.measurement_date),
                         datasets: [
                             {
                                 label: 'Steps by date',
-                                data: sortedstepsdata.map(row => row.steps)
+                                data: sortedstepsdata.map(row => row.steps),
+                                backgroundColor: '#4d3ef9',
+                                borderColor: '#4d3ef9'
                             }
                         ]
                     }

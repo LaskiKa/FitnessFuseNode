@@ -1,7 +1,9 @@
 # FitnessFuseNode
 Front part of FitnessFuse application
+FitnessFuseNode app is calling the [FitnessFuseApp](https://github.com/LaskiKa/FitnessFuse)
 
 To finish readme.md
+Ongoing work
 
 ## Examples:
 1. Home

@@ -20,7 +20,9 @@
   },
   "dependencies": {
     "chart.js": "^4.4.2",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "css-loader": "^6.10.0",
+    "date-fns": "^3.6.0",
     "style-loader": "^3.3.4"
   }
 }

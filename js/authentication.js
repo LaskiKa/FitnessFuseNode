@@ -1,5 +1,7 @@
 // Handling Loging, Register, Logout
 
+import { baseModal } from "./views";
+import { removeRows } from "./views";
 
 export function loginFunction() {
     // Create login form and front login logic
@@ -100,7 +102,10 @@ export function loginFunction() {
         loginform.querySelector('.close').style.cursor='pointer'    
         loginform.querySelector('.close').onclick = () => {
             loginform.remove()
-        }
+        };
+
+        // Remove rows
+        removeRows();
 
         // Add login form to container
         document.querySelector('.container').appendChild(loginform);
@@ -226,10 +231,13 @@ export function registerFunction() {
                 registerform.parentElement.remove()
             }
     
+
+            // remove all modals from app
+            removeRows();
             // Add register form to contentbox
             // Add contentbox to container
             const contentbox = document.createElement('div');
-            contentbox.classList.add('contentbox');
+            contentbox.classList.add('modalrow');
             contentbox.appendChild(registerform)
             document.querySelector('.container').appendChild(contentbox);            
         };

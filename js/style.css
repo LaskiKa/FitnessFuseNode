@@ -1,3 +1,5 @@
+
+
 body {
     color: #4D3EE8;
     font-family: sans-serif;
@@ -59,12 +61,6 @@ nav {
     transform: scale(1.2);
 }
 
-.contentbox{
-    display: flex;
-    justify-content: center;
-    margin: 2rem;
-}
-
 /* BASE MODAL */
 
 .basemodal {
@@ -94,7 +90,14 @@ nav {
     justify-content: center;
 }
 
+.filtermodal{
+    display: flex;
+    justify-content: center;
+}
 
+.filtercontent {
+    margin: 1rem;
+}
 
 .descriptionmodal {
     display: flex;
@@ -133,7 +136,6 @@ nav {
 .modalrow {
     display: flex;
     justify-content: space-around;
-
 }
 
 .modalbox {
@@ -233,3 +235,13 @@ button:hover {
     padding: 0.1rem;
     border-radius: 0.4rem;
 }
+
+@media only screen and (max-width: 600px) {
+    nav {
+        width: 90%;
+    }
+
+    form {
+        max-width: 20rem;
+    }
+  }

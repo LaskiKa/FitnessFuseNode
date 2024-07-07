@@ -1,14 +1,15 @@
 import './style.css';
 import { navbar } from './navbar';
 import { loginFunction, logoutFunction, registerFunction } from './authentication';
-import { aboutFunction, caloriesFunction, contactFunction, homeFunction, stepsFunction, weightFunction } from './views';
+import { aboutFunction, caloriesFunction, contactFunction, 
+        homeFunction, removeRows, stepsFunction, 
+        weightFunction, trainingFunction } from './views';
+import { caloriesConsumedFunction } from './caloriesconsumed';
 
 document.addEventListener('DOMContentLoaded', function () {
     // CONTAINER:
     const container = document.querySelector('.container')
     container.style.display='flex'
-
-
 
         // NAVBAR
 
@@ -100,6 +101,22 @@ if (sessionStorage.getItem('token')) {
         };
     }); 
 
+    // CALORIES CONSUMED
+
+    const caloriesConsumed = caloriesConsumedFunction(true);
+    this.querySelector('.navbtn.caloriesconsumed').addEventListener('click', () => {
+        // If the contact modal not exist -> show the contact modal
+        if (!this.querySelector('.basemodal.caloriesconsumedmodal')) {
+            this.querySelectorAll('.basemodal').forEach((element) => {
+                element.parentElement.remove();
+            });
+            // Append container with calories elements
+            caloriesConsumed.forEach((element) => {
+                container.append(element);
+            });
+        };
+    }); 
+
     // CALORIES
 
     const calories = caloriesFunction(true);
@@ -132,7 +149,26 @@ if (sessionStorage.getItem('token')) {
                 container.append(element);
             });
         };
-    });     
+    });   
+    
+    // TRAINING
+
+    const training = trainingFunction(true);
+
+    this.querySelector('.navbtn.training').addEventListener('click', () => {
+        // If the training modal not exist -> show the training modal
+        if(!this.querySelector('.basemodal.trainingmodal')) {
+            this.querySelectorAll('.basemodal').forEach((element) => {
+                element.parentElement.remove();
+            });
+
+            // Append container with training elements
+            training.forEach((element) => {
+                container.append(element);
+            });
+        };
+    });
+
 };
     // DASHBOARD LOGED IN 
     if (sessionStorage.getItem('token')) {

@@ -19,6 +19,10 @@ export function navbar () {
         weightBtn.classList.add('navbtn', 'weight');
         weightBtn.textContent = 'Weight';
 
+        const trainingBtn = document.createElement('div');
+        trainingBtn.classList.add('navbtn', 'training');
+        trainingBtn.textContent = 'Training';
+
         const stapsBtn = document.createElement('div');
         stapsBtn.classList.add('navbtn', 'steps');
         stapsBtn.textContent = 'Steps';
@@ -27,14 +31,20 @@ export function navbar () {
         caloriseBtn.classList.add('navbtn', 'calories');
         caloriseBtn.textContent = 'Calories';
 
+        const caloriesConsumedBtn = document.createElement('div');
+        caloriesConsumedBtn.classList.add('navbtn', 'caloriesconsumed');
+        caloriesConsumedBtn.textContent = 'Calories Consumed';
+
         const logoutBtn = document.createElement('div');
         logoutBtn.classList.add('navbtn', 'logout');
         logoutBtn.textContent = 'Logout';
 
 
         navbox.querySelector('nav').appendChild(weightBtn);
+        navbox.querySelector('nav').appendChild(trainingBtn);
         navbox.querySelector('nav').appendChild(stapsBtn);
         navbox.querySelector('nav').appendChild(caloriseBtn);
+        navbox.querySelector('nav').appendChild(caloriesConsumedBtn);
         navbox.querySelector('nav').appendChild(logoutBtn);
 
 

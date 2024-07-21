@@ -1,6 +1,8 @@
-
 import  Chart, { LineElement, scales }  from 'chart.js/auto';
 import { baseModal } from './views';
+import 'chartjs-adapter-date-fns';
+import { mapProperty, miliSecondsToHours, durationToMilliseconds } from './tools';
+
 
 export function chartModalFunction() {
 
@@ -26,94 +28,11 @@ export function chartModalFunction() {
     return chartModal
 }
 
-// export function createChartwithApiData(chartType, chartLabel) {
-
-//     const createChartgetData = async (path) => {
-//         const token = sessionStorage.getItem('token');
-//         const response = await fetch(`http://127.0.0.1:8000/${path}/`, {
-//             mode: 'cors',
-//             credentials: "same-origin",
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 'Authorization': `Token ${token}`
-//             }
-//         });
-
-//         // Response verification
-//         if(response.ok) {
-//             const responseData = await response.json();
-//             const sortedResponseData = responseData.sort((a,b)=> new Date(a.measurement_date) - new Date(b.measurement_date));
-
-//             // Convert text to Data
-//             sortedResponseData.forEach(element => {
-//                 element.measurement_date = new Date(element.measurement_date)
-//             });
-
-//             // Filter modal by dates - Event Listener
-//             filterModal.querySelector('#submit').addEventListener('click', () => {
-//                 const start = new Date(document.querySelector('#start').value).setHours(0,0,0,0);
-//                 const end = new Date(document.querySelector('#end').value).setHours(0,0,0,0);
-
-//                 const result = sortedstepsdata.filter(element => {var date = new Date(element.measurement_date).setHours(0,0,0,0);
-//                     return (start <= date && date <= end);
-//                    });
-
-//                 // Fill chart with filtered data
-//                 window.dataChart.data.labels = result.map(row => row.measurement_date.setHours(0,0,0,0));
-//                 window.dataChart.data.datasets[0].data =result.map(row => row.steps);
-//                 window.dataChart.update();
-       
-//             });
-
-//             // IF CHART EXIST - DELETE
-//             if (window.dataChart != null) {
-//                 window.dataChart.destroy()
-//             };
-
-//             // CREATE CHART - create global variable with chart
-//             window.dataChart = new Chart(
-//                 document.querySelector('#canvas'),
-//                 {
-//                     type: chartType,
-//                     options: {
-//                         responsive: true,
-//                         scales: {
-//                             x: {
-//                                 type: 'time',
-//                                 time: {
-//                                     unit: 'day'
-//                                 }
-//                             }
-//                         }
-//                     },
-//                     data: {
-//                         labels: sortedResponseData.map(row => row.measurement_date.setHours(0,0,0,0)),
-//                         datasets: [
-//                             {
-//                                 label: chartLabel,
-//                                 data: sortedResponseData.map(row => row[2]),
-//                                 backgroundColor: '#4d3ef9',
-//                                 borderColor: '#4d3ef9'
-//                             }
-//                         ]
-//                     }
-//                 }
-//             );
-
-//         } else {
-//             const error = await response.json();
-//             console.log('Error: ', error);
-//         };
-
-//     };
-    
-// }
-
-export async function createChartwithApiData(path, chartType, chartLabel, property) {
-    const mapProperty = (property) => {
-        return (data) => data.map(row => row[property]);
-    };
-
+export async function createChartwithApiData(path, chartType, chartLabel, property, methodNumber) {
+    const method = {
+        1: mapProperty(property),
+        2: miliSecondsToHours(property)
+    }
     const token = sessionStorage.getItem('token');
     const response = await fetch(`http://127.0.0.1:8000/${path}/`, {
         mode: 'cors',
@@ -123,6 +42,8 @@ export async function createChartwithApiData(path, chartType, chartLabel, proper
             'Authorization': `Token ${token}`
         }
     });
+
+
     //Response verification
         if(response.ok) {
             const responseData = await response.json();
@@ -132,19 +53,37 @@ export async function createChartwithApiData(path, chartType, chartLabel, proper
             sortedResponseData.forEach(element => {
                 element.measurement_date = new Date(element.measurement_date)
             });
+            
+            // Convert duration data to miliseconds format & from meseurement_data exclude time (left only data)
+            if (property == 'training_time') {
+                sortedResponseData.forEach(element => {
+                    element.training_time = durationToMilliseconds(element.training_time)
+    
+                    const datatime = new Date (element.measurement_date);
+                    const data = datatime.toISOString().split('T')[0]
+                    element.measurement_date = new Date (data);
+                });
+            };
+            
 
             // Filter modal by dates - Event Listener
             document.querySelector('#submit').addEventListener('click', () => {
                 const start = new Date(document.querySelector('#start').value).setHours(0,0,0,0);
                 const end = new Date(document.querySelector('#end').value).setHours(0,0,0,0);
-
+                
                 const result = sortedResponseData.filter(element => {var date = new Date(element.measurement_date).setHours(0,0,0,0);
                     return (start <= date && date <= end);
-                   });
-
+                });
+            
                 // Fill chart with filtered data
                 window.dataChart.data.labels = result.map(row => row.measurement_date.setHours(0,0,0,0));
-                window.dataChart.data.datasets[0].data =result.map(row => row.steps);
+
+                if (property == 'training_time') {
+                    window.dataChart.data.datasets[0].data=method[methodNumber](result);
+                } else {
+                    window.dataChart.data.datasets[0].data =result.map(row => row.steps);
+                };
+                
                 window.dataChart.update();
        
             });
@@ -153,6 +92,10 @@ export async function createChartwithApiData(path, chartType, chartLabel, proper
             if (window.dataChart != null) {
                 window.dataChart.destroy()
             };
+
+            sortedResponseData.forEach(element => {
+                console.log(element.measurement_date)
+            });
 
             // CREATE CHART - create global variable with chart
             window.dataChart = new Chart(
@@ -172,10 +115,12 @@ export async function createChartwithApiData(path, chartType, chartLabel, proper
                     },
                     data: {
                         labels: sortedResponseData.map(row => row.measurement_date.setHours(0,0,0,0)),
+                        // labels: sortedResponseData.map(row => row.measurement_date),
                         datasets: [
                             {
                                 label: chartLabel,
-                                data: mapProperty(property)(sortedResponseData),
+                                // data: mapProperty(property)(sortedResponseData),
+                                data: method[methodNumber](sortedResponseData),
                                 backgroundColor: '#4d3ef9',
                                 borderColor: '#4d3ef9'
                             }

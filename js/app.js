@@ -3,9 +3,10 @@ import { navbar } from './navbar';
 import { loginFunction, logoutFunction, registerFunction } from './authentication';
 import { aboutFunction, caloriesFunction, contactFunction, 
         homeFunction, removeRows, 
-        weightFunction, trainingFunction } from './views';
+        weightFunction } from './views';
 import { caloriesConsumedFunction } from './caloriesconsumed';
 import { stepsFunction } from './stepsFunction';
+import { trainingFunction } from './trainingFunction';
 
 document.addEventListener('DOMContentLoaded', function () {
     // CONTAINER:

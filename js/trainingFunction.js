@@ -1,26 +1,92 @@
-// View: Steps
 import { today, baseModal } from './views';
 import { createChartwithApiData, chartModalFunction } from './chartFunction';
 
-export function stepsFunction(row) {
+export function trainingFunction(row) {
+
+    const getTrainingList = async () => {
+        // SELECT - append new option with list of trainings
+        const token = sessionStorage.getItem('token');
+        const response = await fetch('http://127.0.0.1:8000/traininglist/', {
+            mode: 'cors',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Token ${token}`
+            }
+        });
+        
+    // Response verification
+    if (response.ok) {
+        const trainingList = await response.json();
+
+        // append training list in form
+        const select = document.querySelector('#traininglist');
+        trainingList.forEach( (element) => {
+            const option = document.createElement('option');
+            option.textContent = element.training_name;
+            option.value = element.key;
+            select.appendChild(option);
+        })
+    }
+    };
+
+    const apiTrainingData = async () => {
+        // Function which fill form with sport avalible to choose
+        const token = sessionStorage.getItem('token')
+        const response = await fetch('http://127.0.0.1:8000/training/', {
+            mode: 'cors',
+            credentials: "same-origin",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Token ${token}`
+            }
+        })
+
+        // Response verification
+        if (response.ok) {
+            const trainingData = await response.json()
+            const sortedTrainingData = trainingData.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
+            
+            // Append select with meseaurment data
+
+            const selectelement = document.querySelector('#selectdata')
+            sortedTrainingData.forEach(element => {
+                const option = document.createElement('option');
+                const datetime = new Date (element.measurement_date)
+                const date = datetime.toISOString().split('T')[0];
+                const time = datetime.toISOString().split('T')[1].split('.')[0]
+
+                option.textContent = `${date} ${time} - training: ${element.training} - duration: ${element.training_time}`;
+                option.value = element.id;
+                document.querySelector('select').appendChild(option);
+
+            });
+
+
+        } else {
+            // Error
+            const error = await response.json();
+            console.log('Error: ', error);
+        }
+    };
 
     const now = today();
     const modalArray = [];
 
-    // Steps manage console: update, create, delete
+    // Trainging manage console: Update, Create, Delete
 
-    const stepsModal = baseModal(row);
-    stepsModal.firstChild.classList.add('stepsmodal');
+    const trainingModal = baseModal(row);
+    trainingModal.firstChild.classList.add('trainingmodal');
 
-    // STEPS MANAGE: update, create, delete
+    // TRAINING MANAGE: update, create, delete
     const manageModal = document.createElement('div');
     manageModal.classList.add('managemodal');
 
-    // STEPS MANAGE: UPDATE
+    // TRAINING MANAGE: UPDATE
     const update = document.createElement('div');
     update.classList.add('manage', 'update');
     update.textContent='update';
- 
+
     update.addEventListener('click', () => {
 
         const managecontent = document.createElement('div');
@@ -32,13 +98,22 @@ export function stepsFunction(row) {
         const createform = document.createElement('form');
         createform.classList.add('form', 'update');
         createform.innerHTML = `
-        <label>Select data: </label>
+        <label>Select session: </label>
         <select id='selectdata'>
         </select>
 
-        <label>Steps:</label>
-        <input type="number" id="steps" name="steps" required>
-
+        <label>Training:</label>
+        <select id='traininglist' name='training'>
+        </select>
+        <label>Traning Duration</label>
+        <div id="training_time">
+        <label>Hours:</label>
+        <input type="number" step=1 id="durationhours", name="durationhours" requred>
+        <label>Minutes:</label>
+        <input type="number" step=1 id="durationminutes", name="durationminutes" requred>
+        <label>Seconds:</label>
+        <input type="number" step=1 id="durationseconds", name="durationseconds" requred>
+        </div>
         <label>Measurement date:</label>
         <input type="date" id="measurement_date" name="measurement_date" required>
 
@@ -54,64 +129,34 @@ export function stepsFunction(row) {
             const seleted = createform.querySelector('select')
             var selectedOption = seleted.options[seleted.selectedIndex];
 
-            const stepsinput = createform.querySelector('#steps');
+            const trainingInput = createform.querySelector('#traininglist');
             const dateinput = createform.querySelector('#measurement_date');
             const tieminput = createform.querySelector('#measurement_time');
+            const durationhoursinput = createform.querySelector('#durationhours');
+            const durationminutesinput = createform.querySelector('#durationminutes');
+            const durationsecondsinput = createform.querySelector('#durationseconds');
 
             const measurementdata = selectedOption.textContent.split(" ");
-            const measurementdataweight = measurementdata[measurementdata.length -1];
+            const measurementDataTraining = measurementdata[4];
             const measurementdatadate = measurementdata[0];
             const measurementdatatime = measurementdata[1];
+            const measurementduration = measurementdata[measurementdata.length - 1].split(":")
 
-            stepsinput.value = measurementdataweight;
+            trainingInput.value = measurementDataTraining
             dateinput.value = measurementdatadate;
             tieminput.value = measurementdatatime;
+            durationhoursinput.value = measurementduration[0];
+            durationminutesinput.value = measurementduration[1];
+            durationsecondsinput.value = measurementduration[2];
+
+
 
 
         })
 
-        // SELECT - append new option with data
-        const apistepsdata = async () => {
-            const token = sessionStorage.getItem('token')
-            const response = await fetch('http://127.0.0.1:8000/steps/', {
-                mode: 'cors',
-                credentials: "same-origin",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                }
-            })
-    
-            // Response verification
-            if (response.ok) {
-                const stepsdata = await response.json()
-                const sortedstepsdata = stepsdata.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
-                
-                // Append select with meseaurment data
 
-                const selectelement = document.querySelector('#selectdata')
-                sortedstepsdata.forEach(element => {
-                    const option = document.createElement('option');
-                    const datetime = new Date (element.measurement_date)
-                    const date = datetime.toISOString().split('T')[0];
-                    const time = datetime.toISOString().split('T')[1].split('.')[0]
-
-                    option.textContent = `${date} ${time} - steps: ${element.steps}`;
-                    option.value = element.id;
-                    createform.querySelector('select').appendChild(option);
-
-                });
-
-    
-            } else {
-                // Error
-                const error = await response.json();
-                console.log('Error: ', error);
-            }
-        };
-        
-        apistepsdata()
-
+        // Fill form with Sport avalible to choose
+        apiTrainingData();
 
         formmodal.appendChild(createform);
         managecontent.appendChild(formmodal);
@@ -121,7 +166,7 @@ export function stepsFunction(row) {
             document.querySelectorAll('.managecontent').forEach((element) => {
                 element.remove();
             });            
-            document.querySelector('.stepsmodal').append(managecontent);
+            document.querySelector('.trainingmodal').append(managecontent);
         };
 
         // Update button
@@ -130,12 +175,15 @@ export function stepsFunction(row) {
 
             const formdata = new FormData(event.target)
             const meseaurmentid = parseInt(document.querySelector('select').value)
-            const newdate = `${formdata.get('measurement_date')}T${formdata.get('measurement_time')}`
             const token = sessionStorage.getItem('token');
+            const duration = `${formdata.get('durationhours')}:${formdata.get('durationminutes')}:${formdata.get('durationseconds')}`;
+            const measurement_date_time = `${formdata.get('measurement_date')}T${formdata.get('measurement_time')}Z`
 
-            // PUT - update steps
-            const updatestepsdata = async() => {
-                const response = await fetch(`http://127.0.0.1:8000/steps/${meseaurmentid}/`, {
+        
+
+            // PUT - update training
+            const updateTrainingData = async() => {
+                const response = await fetch(`http://127.0.0.1:8000/training/${meseaurmentid}/`, {
                     mode: 'cors',
                     credentials: 'same-origin',
                     method: 'PUT',
@@ -145,8 +193,9 @@ export function stepsFunction(row) {
                     },
                     body: JSON.stringify({
                         'user': token,
-                        'steps': formdata.get('steps'),
-                        'measurement_date': newdate
+                        'training': formdata.get('training'),
+                        'measurement_date': measurement_date_time,
+                        'training_time': duration,
                     })
                 })
 
@@ -169,7 +218,7 @@ export function stepsFunction(row) {
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getSteps();
+                    getTraining();
 
                     // Delete succes bar
                     setTimeout( () => {
@@ -177,16 +226,16 @@ export function stepsFunction(row) {
                     }, 3000);
                 }
             }
-            updatestepsdata();
+            updateTrainingData();
 
 
         });
 
+        getTrainingList();
 
-    });   
+    });
 
-    // STEPS MANAGE: CREATE
-
+    // TAINING MANAGE: CREATE
     const create = document.createElement('div');
     create.classList.add('manage','create');
     create.textContent='create';
@@ -201,47 +250,59 @@ export function stepsFunction(row) {
         const createform = document.createElement('form');
         createform.classList.add('form', 'create');
         createform.innerHTML = `
-        <label>Steps:</label>
-        <input type="number" id="steps" name="steps" required>
-
+        <label>Training:</label>
+        <select id='traininglist' name='training'>
+        </select>
+        <label>Traning Duration</label>
+        <div id="training_time">
+        <label>Hours:</label>
+        <input type="number" step=1 id="durationhours", name="durationhours" value=0 requred>
+        <label>Minutes:</label>
+        <input type="number" step=1 id="durationminutes", name="durationminutes" value=0 requred>
+        <label>Seconds:</label>
+        <input type="number" step=1 id="durationseconds", name="durationseconds" value=0 requred>
+        </div>
         <label>Measurement date:</label>
         <input type="date" id="measurement_date" name="measurement_date" required>
 
         <label>Measurement time:</label>
         <input type="time" step=1 id="measurement_time" name="measurement_time" required>
         
-        <button type="submit" id="submit">Submit</button>
+        <button type="submit" id="submit">Create</button>
 
         `
         createform.querySelector('#measurement_date').value = now[0];
         createform.querySelector('#measurement_time').value = now[1];
         
 
+        // Fill form with Sport avalible to choose
+        getTrainingList();
         formmodal.appendChild(createform);
         managecontent.appendChild(formmodal);
+
         
 
         if (!document.querySelector('.managecontent.create')) {
-            // If the .managecontent.update not exist -> show the managecontetn update modal
+            // If the .managecontent.create not exist -> show the managecontetn create modal
             document.querySelectorAll('.managecontent').forEach((element) => {
                 element.remove();
             });
-            document.querySelector('.stepsmodal').append(managecontent);
+            document.querySelector('.trainingmodal').append(managecontent);
         };
 
-        // POST: add new steps to api
+        // POST: add new training to api
         document.querySelector('.form').addEventListener('submit', (event) => {
             event.preventDefault();
 
             const formdata = new FormData(event.target)
             const todatatime = `${formdata.get('measurement_date')}T${formdata.get('measurement_time')}`
-
+            const duration = `${formdata.get('durationhours')}:${formdata.get('durationminutes')}:${formdata.get('durationseconds')}`;
             const token = sessionStorage.getItem('token')
             
 
-            // POST - Add steps api
-            const apiaddsteps = async () => {
-                const response = await fetch('http://127.0.0.1:8000/steps/', {
+            // POST - Add training api
+            const apiAddTraining = async () => {
+                const response = await fetch('http://127.0.0.1:8000/training/', {
                     mode: 'cors',
                     credentials: 'same-origin',
                     method: 'POST',
@@ -251,8 +312,9 @@ export function stepsFunction(row) {
                     },
                     body: JSON.stringify({
                         'user': token,
-                        'steps': formdata.get('steps'),
-                        'measurement_date': todatatime
+                        'training': formdata.get('training'),
+                        'measurement_date': todatatime,
+                        'training_time': duration
     
                     })
                 })
@@ -277,7 +339,7 @@ export function stepsFunction(row) {
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getSteps();
+                    getTraining();
                     document.querySelector('.form').reset();
 
                     // Delete succes bar
@@ -291,13 +353,13 @@ export function stepsFunction(row) {
                 }
 
             }
-            apiaddsteps();
+            apiAddTraining();
 
         })
 
     });
 
-    // STEPS MANAGE: DELETE
+    // TRAINING MANAGE: DELETE
     const deletedata = document.createElement('div');
     deletedata.classList.add('manage', 'deletedata');
     deletedata.textContent='delete';
@@ -322,9 +384,9 @@ export function stepsFunction(row) {
         `
 
         // SELECT - append new option with data
-        const apistepsdata = async () => {
+        const apiTrainingData = async () => {
             const token = sessionStorage.getItem('token')
-            const response = await fetch('http://127.0.0.1:8000/steps/', {
+            const response = await fetch('http://127.0.0.1:8000/training/', {
                 mode: 'cors',
                 credentials: "same-origin",
                 headers: {
@@ -335,20 +397,20 @@ export function stepsFunction(row) {
     
             // Response verification
             if (response.ok) {
-                const stepsdata = await response.json()
-                const sortedstepsdata = stepsdata.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
+                const trainingData = await response.json()
+                const sortedTrainingData = trainingData.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
                 
                 // Append select with meseaurment data
 
                 const selectelement = document.querySelector('#selectdata')
 
-                sortedstepsdata.forEach(element => {
+                sortedTrainingData.forEach(element => {
                     const option = document.createElement('option');
                     const datetime = new Date (element.measurement_date)
                     const date = datetime.toISOString().split('T')[0];
                     const time = datetime.toISOString().split('T')[1].split('.')[0]
 
-                    option.textContent = `${date} ${time} - steps: ${element.steps}`;
+                    option.textContent = `${date} ${time} - weight: ${element.training}`;
                     option.value = element.id;
                     createform.querySelector('select').appendChild(option);
 
@@ -362,7 +424,7 @@ export function stepsFunction(row) {
             }
         };
         
-        apistepsdata()
+        apiTrainingData()
 
 
         formmodal.appendChild(createform);
@@ -374,7 +436,7 @@ export function stepsFunction(row) {
             document.querySelectorAll('.managecontent').forEach((element) => {
                 element.remove();
             });
-            document.querySelector('.stepsmodal').append(managecontent);
+            document.querySelector('.trainingmodal').append(managecontent);
         };
 
         // Event listener - delete
@@ -383,7 +445,7 @@ export function stepsFunction(row) {
             const deletedata = async () => {
                 const token = sessionStorage.getItem('token');
                 const id = document.querySelector('select').value
-                const response = await fetch(`http://127.0.0.1:8000/steps/${id}/`, {
+                const response = await fetch(`http://127.0.0.1:8000/training/${id}/`, {
                     mode: 'cors',
                     credentials: "same-origin",
                     method: 'DELETE',
@@ -411,7 +473,8 @@ export function stepsFunction(row) {
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getSteps();
+                    getTraining();
+
                     // Remove removed option
                     const toremove = document.querySelector('select');
                     toremove.remove(toremove.selectedIndex);
@@ -429,23 +492,22 @@ export function stepsFunction(row) {
 
     }); 
 
-    // Append UPDATE CREATE DELETE
+    // Append {UPDATE CREATE DELETE}
     manageModal.appendChild(update);
     manageModal.appendChild(create);
     manageModal.appendChild(deletedata);
-    stepsModal.firstChild.appendChild(manageModal);
+    trainingModal.firstChild.appendChild(manageModal);
 
-
-    // // CHART
+    // CHART
     const chartModal = chartModalFunction();
     
-    // Get steps data after clicking steps navbtn
-    document.querySelector('.navbtn.steps').addEventListener('click', () => {
-        createChartwithApiData('steps', 'bar', 'Steps by date', 'steps', 1);
+    // Get training data after clicking weight navbtn
+    document.querySelector('.navbtn.training').addEventListener('click', () => {
+        createChartwithApiData('training', 'line', 'Training hours', 'training_time', 2);
+
     })
 
+    modalArray.push(trainingModal, chartModal);
 
-    modalArray.push(stepsModal, chartModal);
-    
     return modalArray
 };

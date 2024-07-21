@@ -2,9 +2,10 @@ import './style.css';
 import { navbar } from './navbar';
 import { loginFunction, logoutFunction, registerFunction } from './authentication';
 import { aboutFunction, caloriesFunction, contactFunction, 
-        homeFunction, removeRows, stepsFunction, 
+        homeFunction, removeRows, 
         weightFunction, trainingFunction } from './views';
 import { caloriesConsumedFunction } from './caloriesconsumed';
+import { stepsFunction } from './stepsFunction';
 
 document.addEventListener('DOMContentLoaded', function () {
     // CONTAINER:

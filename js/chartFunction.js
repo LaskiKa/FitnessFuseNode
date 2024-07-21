@@ -77,13 +77,7 @@ export async function createChartwithApiData(path, chartType, chartLabel, proper
             
                 // Fill chart with filtered data
                 window.dataChart.data.labels = result.map(row => row.measurement_date.setHours(0,0,0,0));
-
-                if (property == 'training_time') {
-                    window.dataChart.data.datasets[0].data=method[methodNumber](result);
-                } else {
-                    window.dataChart.data.datasets[0].data =result.map(row => row.steps);
-                };
-                
+                window.dataChart.data.datasets[0].data = method[methodNumber](result)
                 window.dataChart.update();
        
             });
@@ -129,6 +123,6 @@ export async function createChartwithApiData(path, chartType, chartLabel, proper
             const error = await response.json();
             console.log('Error: ', error);
         };
-
+        console.log(window.dataChart);
     
 }

@@ -526,7 +526,6 @@ export function caloriesConsumedFunction(row) {
             const caloriesData = await response.json()
             const sortedCaloriesData = caloriesData.sort((a,b)=> new Date(a.measurement_date) - new Date(b.measurement_date));
             
-            console.log(sortedCaloriesData);
             // IF CHART EXIST - DELETE
             if (window.dataChart != null) {
                 window.dataChart.destroy()

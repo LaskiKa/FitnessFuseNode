@@ -93,10 +93,6 @@ export async function createChartwithApiData(path, chartType, chartLabel, proper
                 window.dataChart.destroy()
             };
 
-            sortedResponseData.forEach(element => {
-                console.log(element.measurement_date)
-            });
-
             // CREATE CHART - create global variable with chart
             window.dataChart = new Chart(
                 document.querySelector('#canvas'),

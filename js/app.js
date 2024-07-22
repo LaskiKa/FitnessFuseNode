@@ -1,12 +1,13 @@
 import './style.css';
 import { navbar } from './navbar';
 import { loginFunction, logoutFunction, registerFunction } from './authentication';
-import { aboutFunction, caloriesFunction, contactFunction, 
+import { aboutFunction, contactFunction, 
         homeFunction, removeRows } from './views';
 import { caloriesConsumedFunction } from './caloriesconsumed';
 import { stepsFunction } from './stepsFunction';
 import { trainingFunction } from './trainingFunction';
 import { weightFunction } from './weightFunction';
+import { caloriesFunction } from './caloriesFunction';
 
 document.addEventListener('DOMContentLoaded', function () {
     // CONTAINER:

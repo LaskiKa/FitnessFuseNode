@@ -441,7 +441,11 @@ export function stepsFunction(row) {
     
     // Get steps data after clicking steps navbtn
     document.querySelector('.navbtn.steps').addEventListener('click', () => {
-        createChartwithApiData('steps', 'bar', 'Steps by date', 'steps', 1);
+        createChartwithApiData('steps', 'bar', 'Steps by date', 
+                                {type: 'time',
+                                    time: {unit: 'day'}
+                                },
+                                ['steps', 1], ['',3]);
     })
 
 

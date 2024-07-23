@@ -503,7 +503,11 @@ export function trainingFunction(row) {
     
     // Get training data after clicking weight navbtn
     document.querySelector('.navbtn.training').addEventListener('click', () => {
-        createChartwithApiData('training', 'line', 'Training hours', 'training_time', 2);
+        createChartwithApiData('training', 'line', 'Training hours', 
+                                {type: 'time',
+                                    time: {unit: 'day'}
+                                },
+                                ['training_time', 2], ['', 3]);
 
     })
 

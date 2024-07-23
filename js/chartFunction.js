@@ -1,7 +1,20 @@
 import  Chart, { LineElement, scales }  from 'chart.js/auto';
 import { baseModal } from './views';
 import 'chartjs-adapter-date-fns';
-import { mapProperty, miliSecondsToHours, durationToMilliseconds } from './tools';
+import { mapProperty, miliSecondsToHours, durationToMilliseconds, meseaurmentDate, methodFunction } from './tools';
+
+
+
+// ROZBUDOWAĆ 
+    //                 type: 'line',
+    //                 options: {
+    //                     responsive: true,
+    //                     scales: {
+    //                         y: {
+    //                             beginAtZero: true,
+    //                         }
+    //                     },
+    //                 },
 
 
 export function chartModalFunction() {
@@ -28,11 +41,11 @@ export function chartModalFunction() {
     return chartModal
 }
 
-export async function createChartwithApiData(path, chartType, chartLabel, property, methodNumber) {
-    const method = {
-        1: mapProperty(property),
-        2: miliSecondsToHours(property)
-    }
+export async function createChartwithApiData(path, chartType, chartLabel,
+                                            xScale, 
+                                            [property1, dataMethodNumber], 
+                                            [property2, labelsMethodNumber]) {
+
     const token = sessionStorage.getItem('token');
     const response = await fetch(`http://127.0.0.1:8000/${path}/`, {
         mode: 'cors',
@@ -55,7 +68,7 @@ export async function createChartwithApiData(path, chartType, chartLabel, proper
             });
             
             // Convert duration data to miliseconds format & from meseurement_data exclude time (left only data)
-            if (property == 'training_time') {
+            if (property1 === 'training_time' || property2 === 'training_time') {
                 sortedResponseData.forEach(element => {
                     element.training_time = durationToMilliseconds(element.training_time)
     
@@ -76,8 +89,10 @@ export async function createChartwithApiData(path, chartType, chartLabel, proper
                 });
             
                 // Fill chart with filtered data
-                window.dataChart.data.labels = result.map(row => row.measurement_date.setHours(0,0,0,0));
-                window.dataChart.data.datasets[0].data = method[methodNumber](result)
+                // window.dataChart.data.labels = result.map(row => row.measurement_date.setHours(0,0,0,0));
+                window.dataChart.data.labels = methodFunction(labelsMethodNumber, property2)(result)
+                // window.dataChart.data.datasets[0].data = method[dataMethodNumber](result)
+                window.dataChart.data.datasets[0].data = methodFunction(dataMethodNumber ,property1)(result)
                 window.dataChart.update();
        
             });
@@ -95,22 +110,29 @@ export async function createChartwithApiData(path, chartType, chartLabel, proper
                     options: {
                         responsive: true,
                         scales: {
-                            x: {
-                                type: 'time',
-                                time: {
-                                    unit: 'day'
-                                }
-                            }
+                            y: {
+                                beginAtZero: true,
+                            },
+                            x: xScale
+                            // {
+                            //     type: 'time',
+                            //     time: {
+                            //         unit: 'day'
+                            //     }
+                            // }
                         }
                     },
                     data: {
-                        labels: sortedResponseData.map(row => row.measurement_date.setHours(0,0,0,0)),
+                        // labels: sortedResponseData.map(row => row.measurement_date.setHours(0,0,0,0)),
+                        // labels: method[labelsMethodNumber](property2)(sortedResponseData),
+                        labels: methodFunction(labelsMethodNumber, property2)(sortedResponseData),
                         // labels: sortedResponseData.map(row => row.measurement_date),
                         datasets: [
                             {
                                 label: chartLabel,
                                 // data: mapProperty(property)(sortedResponseData),
-                                data: method[methodNumber](sortedResponseData),
+                                // data: method[dataMethodNumber](property1)(sortedResponseData),
+                                data: methodFunction(dataMethodNumber ,property1)(sortedResponseData),
                                 backgroundColor: '#4d3ef9',
                                 borderColor: '#4d3ef9'
                             }

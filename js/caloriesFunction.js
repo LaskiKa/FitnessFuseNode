@@ -437,87 +437,17 @@ export function caloriesFunction(row) {
     caloriesModal.firstChild.appendChild(manageModal);
 
     // CHART
-    // const chartModal = baseModal(row);
-    // chartModal.firstChild.classList.add('chartmodal');
-
-    // const canvas = document.createElement('canvas');
-    // canvas.classList.add('canvas');
-    // canvas.setAttribute('id', 'canvas'); // canvas chart id
-
-    // chartModal.firstChild.appendChild(canvas);
-    
-    // // GET CALORIES DATA
-    // const getCalories = async () => {
-    //     const token = sessionStorage.getItem('token')
-    //     const response = await fetch('http://127.0.0.1:8000/caloriesburned/', {
-    //         mode: 'cors',
-    //         credentials: "same-origin",
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'Authorization': `Token ${token}`
-    //         }
-    //     })
-
-    //     // Response verification
-    //     if (response.ok) {
-    //         const caloriesdata = await response.json()
-    //         const sortedcaloriesdata = caloriesdata.sort((a,b)=> new Date(a.measurement_date) - new Date(b.measurement_date));
-
-    //         // From meseurement_data exclude time (left only data)
-    //         sortedcaloriesdata.forEach(element => {
-    //             const datatime = new Date (element.measurement_date);
-    //             const data = datatime.toISOString().split('T')[0]
-    //             element.measurement_date = data;
-    //             });
-
-    //         // IF CHART EXIST - DELETE
-    //         if (window.dataChart != null) {
-    //             window.dataChart.destroy()
-    //         }
-
-    //         // CREATE CHART - create global variable with chart
-    //         window.dataChart = new Chart(
-    //             chartModal.querySelector('#canvas'),
-    //             {
-    //                 type: 'line',
-    //                 options: {
-    //                     responsive: true,
-    //                     scales: {
-    //                         y: {
-    //                             beginAtZero: true,
-    //                         }
-    //                     },
-    //                 },
-    //                 data: {
-    //                     labels: sortedcaloriesdata.map(row => row.measurement_date),
-    //                     datasets: [
-    //                         {
-    //                             label: 'Burned calories by date',
-    //                             data: sortedcaloriesdata.map(row => row.kcal),
-    //                             backgroundColor: '#4d3ef9',
-    //                             borderColor: '#4d3ef9'
-    //                         }
-    //                     ]
-    //                 }
-    //             }
-    //         );
-            
-    //     } else {
-    //         // Error
-    //         const error = await response.json();
-    //         console.log('Error: ', error);
-    //     }
-    // };
-    
-
     const chartModal = chartModalFunction();
-
 
     // Get calories data after pressing calories navbtn
     document.querySelector('.navbtn.calories').addEventListener('click', () => {
         // getCalories();
         // y begin at 0! true
-        createChartwithApiData('caloriesburned', 'line', 'Burned calories by date', 'kcal', 1);
+        createChartwithApiData('caloriesburned', 'line', 'Burned calories by date', 
+                                {type: 'time',
+                                    time: {unit: 'day'}
+                                },                    
+                                ['kcal', 1], ['', 3]);
     })
 
     modalArray.push(caloriesModal, chartModal);

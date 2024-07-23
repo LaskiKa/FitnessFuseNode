@@ -3,9 +3,30 @@ export const mapProperty = (property) => {
 };
 
 export const miliSecondsToHours = (property) => {
-// const hours = Math.floor(miliseconds / (1000*60*60));
     return (data) => data.map(row => row[property] / (1000*60*60))
 };
+
+export const measurementDate = (property) => {
+    return (data) => data.map(row => row.measurement_date.setHours(0,0,0,0))
+}
+
+export const methodFunction = (methodNumber, property) => {
+    switch (methodNumber) {
+        case 1:
+            return mapProperty(property);
+        case 2:
+            return miliSecondsToHours(property);
+        case 3:
+            return measurementDate(property);
+        default:
+            throw new Error('Invalid method number');
+    }
+};
+
+
+// ZAMIAST METHOD 
+// ZROBIĆ FUNKCJE, KTÓRA PRZYJMUJE PROPERTY ORAZ NUMER I ZWRACA KONKRETNA FUNKCJĘ??
+
 
 export function durationToMilliseconds(duration) {
     // Convert duration to miliseconds 

@@ -441,7 +441,11 @@ export function  weightFunction(row) {
     
     // Get weight data after clicking weight navbtn
     document.querySelector('.navbtn.weight').addEventListener('click', () => {
-        createChartwithApiData('weight', 'line', 'Weight by date', 'weight', 1);
+        createChartwithApiData('weight', 'line', 'Weight by date', 
+                                {type: 'time',
+                                    time: {unit: 'day'}
+                                },
+                                ['weight', 1], ['', 3]);
     })
 
     modalArray.push(weightModal, chartModal);

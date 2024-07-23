@@ -1,6 +1,8 @@
 // Views: Calories Consumed
 import  Chart, { LineElement }  from 'chart.js/auto';
 import { today, baseModal } from './views';
+import { createChartwithApiData, chartModalFunction } from './chartFunction';
+
 
 export function caloriesConsumedFunction(row) {
     
@@ -500,74 +502,85 @@ export function caloriesConsumedFunction(row) {
     caloriesModal.firstChild.appendChild(manageModal);
 
     // CHART
-    const chartModal = baseModal(row);
-    chartModal.firstChild.classList.add('chartmodal');
+    // const chartModal = baseModal(row);
+    // chartModal.firstChild.classList.add('chartmodal');
 
-    const canvas = document.createElement('canvas');
-    canvas.classList.add('canvas');
-    canvas.setAttribute('id', 'canvas'); // canvas chart id
+    // const canvas = document.createElement('canvas');
+    // canvas.classList.add('canvas');
+    // canvas.setAttribute('id', 'canvas'); // canvas chart id
 
-    chartModal.firstChild.appendChild(canvas);
+    // chartModal.firstChild.appendChild(canvas);
     
-    // GET CALORIES DATA
-    const getCalories = async () => {
-        const token = sessionStorage.getItem('token')
-        const response = await fetch('http://127.0.0.1:8000/calorieseaten/', {
-            mode: 'cors',
-            credentials: "same-origin",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${token}`
-            }
-        })
+    // // GET CALORIES DATA
+    // const getCalories = async () => {
+    //     const token = sessionStorage.getItem('token')
+    //     const response = await fetch('http://127.0.0.1:8000/calorieseaten/', {
+    //         mode: 'cors',
+    //         credentials: "same-origin",
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Authorization': `Token ${token}`
+    //         }
+    //     })
 
-        // Response verification
-        if (response.ok) {
-            const caloriesData = await response.json()
-            const sortedCaloriesData = caloriesData.sort((a,b)=> new Date(a.measurement_date) - new Date(b.measurement_date));
+    //     // Response verification
+    //     if (response.ok) {
+    //         const caloriesData = await response.json()
+    //         const sortedCaloriesData = caloriesData.sort((a,b)=> new Date(a.measurement_date) - new Date(b.measurement_date));
             
-            // IF CHART EXIST - DELETE
-            if (window.dataChart != null) {
-                window.dataChart.destroy()
-            }
+    //         // IF CHART EXIST - DELETE
+    //         if (window.dataChart != null) {
+    //             window.dataChart.destroy()
+    //         }
 
-            // CREATE CHART - create global variable with chart
-            window.dataChart = new Chart(
-                chartModal.querySelector('#canvas'),
-                {
-                    type: 'line',
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                            }
-                        },
-                    },
-                    data: {
-                        labels: sortedCaloriesData.map(row => row.meal),
-                        datasets: [
-                            {
-                                label: 'Consumed calories by date',
-                                data: sortedCaloriesData.map(row => row.kcal),
-                                backgroundColor: '#4d3ef9',
-                                borderColor: '#4d3ef9'
-                            }
-                        ]
-                    }
-                }
-            );
+    //         // CREATE CHART - create global variable with chart
+    //         window.dataChart = new Chart(
+    //             chartModal.querySelector('#canvas'),
+    //             {
+    //                 type: 'line',
+    //                 options: {
+    //                     responsive: true,
+    //                     scales: {
+    //                         y: {
+    //                             beginAtZero: true,
+    //                         }
+    //                     },
+    //                 },
+    //                 data: {
+    //                     labels: sortedCaloriesData.map(row => row.meal),
+    //                     datasets: [
+    //                         {
+    //                             label: 'Consumed calories by date',
+    //                             data: sortedCaloriesData.map(row => row.kcal),
+    //                             backgroundColor: '#4d3ef9',
+    //                             borderColor: '#4d3ef9'
+    //                         }
+    //                     ]
+    //                 }
+    //             }
+    //         );
             
-        } else {
-            // Error
-            const error = await response.json();
-            console.log('Error: ', error);
-        }
-    };
+    //     } else {
+    //         // Error
+    //         const error = await response.json();
+    //         console.log('Error: ', error);
+    //     }
+    // };
     
-    // Get consumed calories data after pressing calories consumed navbtn
+    // // Get consumed calories data after pressing calories consumed navbtn
+    // document.querySelector('.navbtn.caloriesconsumed').addEventListener('click', () => {
+    //     getCalories();
+    // })
+
+    // CHART
+    const chartModal = chartModalFunction();
+
     document.querySelector('.navbtn.caloriesconsumed').addEventListener('click', () => {
-        getCalories();
+    // getCalories();
+        createChartwithApiData('calorieseaten', 'line', 'Consumed calories by date',
+                                {type: 'category'}, 
+                                ['kcal', 1], 
+                                ['meal', 1]);
     })
 
     modalArray.push(caloriesModal, chartModal);

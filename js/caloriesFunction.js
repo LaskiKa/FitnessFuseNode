@@ -217,7 +217,6 @@ export function caloriesFunction(row) {
 
             const token = sessionStorage.getItem('token')
             
-
             // POST - Add calories api
             const apiaddcalories = async () => {
 
@@ -294,17 +293,7 @@ export function caloriesFunction(row) {
         `
 
         // SELECT - append new option with data
-        const apicaloriesdata = async () => {
-
-            // const response = await fetch('http://127.0.0.1:8000/caloriesburned/', {
-            //     mode: 'cors',
-            //     credentials: "same-origin",
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         'Authorization': `Token ${token}`
-            //     }
-            // })
-    
+        const apicaloriesdata = async () => {    
             const response = await responseFunction('caloriesburned');
 
             // Response verification

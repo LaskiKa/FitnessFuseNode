@@ -1,6 +1,7 @@
 import { today, baseModal } from './views';
 import { createChartwithApiData, chartModalFunction } from './chartFunction';
-import { responseFunction } from './tools';
+import { createFunction, deleteFunction, responseFunction, updateFunction } from './tools';
+
 
 export function caloriesFunction(row) {
     
@@ -23,15 +24,15 @@ export function caloriesFunction(row) {
    
     update.addEventListener('click', () => {
 
-        const managecontent = document.createElement('div');
-        managecontent.classList.add('managecontent', 'update');
+        const manageContent = document.createElement('div');
+        manageContent.classList.add('managecontent', 'update');
 
-        const formmodal = document.createElement('div');
-        formmodal.classList.add('formmodal');
+        const formModal = document.createElement('div');
+        formModal.classList.add('formmodal');
 
-        const createform = document.createElement('form');
-        createform.classList.add('form', 'update');
-        createform.innerHTML = `
+        const createForm = document.createElement('form');
+        createForm.classList.add('form', 'update');
+        createForm.innerHTML = `
         <label>Select data: </label>
         <select id='selectdata'>
         </select>
@@ -50,57 +51,45 @@ export function caloriesFunction(row) {
         `
 
         // Event listener - after selecting data to update fill other fields in form
-        createform.querySelector('select').addEventListener('click', () => {
-            const seleted = createform.querySelector('select')
+        createForm.querySelector('select').addEventListener('click', () => {
+            const seleted = createForm.querySelector('select')
             var selectedOption = seleted.options[seleted.selectedIndex];
 
-            const caloriestinput = createform.querySelector('#kcal');
-            const dateinput = createform.querySelector('#measurement_date');
-            const tieminput = createform.querySelector('#measurement_time');
+            const caloriestInput = createForm.querySelector('#kcal');
+            const dateInput = createForm.querySelector('#measurement_date');
+            const tiemInput = createForm.querySelector('#measurement_time');
 
-            const measurementdata = selectedOption.textContent.split(" ");
-            const measurementdataweight = measurementdata[measurementdata.length -1];
-            const measurementdatadate = measurementdata[0];
-            const measurementdatatime = measurementdata[1];
+            const measurementData = selectedOption.textContent.split(" ");
+            const measurementDataWeight = measurementData[measurementData.length -1];
+            const measurementDataDate = measurementData[0];
+            const measurementDataTime = measurementData[1];
 
-            caloriestinput.value = measurementdataweight;
-            dateinput.value = measurementdatadate;
-            tieminput.value = measurementdatatime;
+            caloriestInput.value = measurementDataWeight;
+            dateInput.value = measurementDataDate;
+            tiemInput.value = measurementDataTime;
 
 
         });
 
         // SELECT - append new option with data
         const apicaloriesdata = async () => {
-            // const token = sessionStorage.getItem('token')
-            // const response = await fetch('http://127.0.0.1:8000/caloriesburned/', {
-            //     mode: 'cors',
-            //     credentials: "same-origin",
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         'Authorization': `Token ${token}`
-            //     }
-            // })
             const response = await responseFunction('caloriesburned');
-            console.log(response);
     
             // Response verification
             if (response.ok) {
-                const caloriesdata = await response.json()
-                const sortedcaloriesdata = caloriesdata.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
+                const caloriesData = await response.json()
+                const sortedCaloriesData = caloriesData.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
                 
                 // Append select with meseaurment data
-
-                // const selectelement = document.querySelector('#selectdata')
-                sortedcaloriesdata.forEach(element => {
+                sortedCaloriesData.forEach(element => {
                     const option = document.createElement('option');
-                    const datetime = new Date (element.measurement_date)
-                    const date = datetime.toISOString().split('T')[0];
-                    const time = datetime.toISOString().split('T')[1].split('.')[0]
+                    const dateTime = new Date (element.measurement_date)
+                    const date = dateTime.toISOString().split('T')[0];
+                    const time = dateTime.toISOString().split('T')[1].split('.')[0]
 
                     option.textContent = `${date} ${time} - kcal: ${element.kcal}`;
                     option.value = element.id;
-                    createform.querySelector('select').appendChild(option);
+                    createForm.querySelector('select').appendChild(option);
 
                 });
 
@@ -115,56 +104,47 @@ export function caloriesFunction(row) {
         apicaloriesdata()
 
 
-        formmodal.appendChild(createform);
-        managecontent.appendChild(formmodal);
+        formModal.appendChild(createForm);
+        manageContent.appendChild(formModal);
 
         if (!document.querySelector('.managecontent.update')) {
             // If the .managecontent.update not exist -> show the managecontetn update modal
             document.querySelectorAll('.managecontent').forEach((element) => {
                 element.remove();
             });            
-            document.querySelector('.caloriesmodal').append(managecontent);
+            document.querySelector('.caloriesmodal').append(manageContent);
         };
 
         // Update button
         document.querySelector('.form').addEventListener('submit', (event) => {
             event.preventDefault();
 
-            const formdata = new FormData(event.target)
-            const meseaurmentid = parseInt(document.querySelector('select').value)
-            const newdate = `${formdata.get('measurement_date')}T${formdata.get('measurement_time')}`
+            const formData = new FormData(event.target)
+            const meseaurmentId = parseInt(document.querySelector('select').value)
+            const newDate = `${formData.get('measurement_date')}T${formData.get('measurement_time')}`
             const token = sessionStorage.getItem('token');
 
             // PUT - update calories
             const updatecaloriesdata = async() => {
-                const response = await fetch(`http://127.0.0.1:8000/caloriesburned/${meseaurmentid}/`, {
-                    mode: 'cors',
-                    credentials: 'same-origin',
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Token ${token}`
-                    },
-                    body: JSON.stringify({
-                        'user': token,
-                        'kcal': formdata.get('kcal'),
-                        'measurement_date': newdate
-                    })
-                })
+                const body = {
+                    'kcal': formData.get('kcal'),
+                    'measurement_date': newDate
+                };
+
+                const response = await updateFunction('caloriesburned', meseaurmentId, body)
 
                 if (response.ok) {
-                    const data = response.json();
 
-                    const infomodal = document.createElement('div');
-                    infomodal.classList.add('infomodal', 'success');
+                    const infoModal = document.createElement('div');
+                    infoModal.classList.add('infomodal', 'success');
 
-                    const infocontent = document.createElement('div');
-                    infocontent.classList.add('infocontent');
-                    infocontent.textContent = 'Updated!';
+                    const infoContent = document.createElement('div');
+                    infoContent.classList.add('infocontent');
+                    infoContent.textContent = 'Updated!';
 
-                    infomodal.append(infocontent);
+                    infoModal.append(infoContent);
                     
-                    document.querySelector('.managemodal').parentElement.append(infomodal)
+                    document.querySelector('.managemodal').parentElement.append(infoModal)
 
                     // UPDATE CHART
                     // Destroy chart if exist
@@ -184,29 +164,24 @@ export function caloriesFunction(row) {
                 }
             }
             updatecaloriesdata();
-
-
         });
-
-
     });        
 
     // CALORIES MANAGE: CREATE
-
     const create = document.createElement('div');
     create.classList.add('manage','create');
     create.textContent='create';
 
     create.addEventListener('click', () => {
-        const managecontent = document.createElement('div');
-        managecontent.classList.add('managecontent', 'create');
+        const manageContent = document.createElement('div');
+        manageContent.classList.add('managecontent', 'create');
 
-        const formmodal = document.createElement('div');
-        formmodal.classList.add('formmodal');
+        const formModal = document.createElement('div');
+        formModal.classList.add('formmodal');
 
-        const createform = document.createElement('form');
-        createform.classList.add('form', 'create');
-        createform.innerHTML = `
+        const createForm = document.createElement('form');
+        createForm.classList.add('form', 'create');
+        createForm.innerHTML = `
         <label>Calories:</label>
         <input type="number" id="kcal" name="kcal" required>
 
@@ -219,64 +194,51 @@ export function caloriesFunction(row) {
         <button type="submit" id="submit">Submit</button>
 
         `
-        createform.querySelector('#measurement_date').value = now[0];
-        createform.querySelector('#measurement_time').value = now[1];
+        createForm.querySelector('#measurement_date').value = now[0];
+        createForm.querySelector('#measurement_time').value = now[1];
         
-
-        formmodal.appendChild(createform);
-        managecontent.appendChild(formmodal);
-        
+        formModal.appendChild(createForm);
+        manageContent.appendChild(formModal);
 
         if (!document.querySelector('.managecontent.create')) {
             // If the .managecontent.update not exist -> show the managecontetn update modal
             document.querySelectorAll('.managecontent').forEach((element) => {
                 element.remove();
             });
-            document.querySelector('.caloriesmodal').append(managecontent);
+            document.querySelector('.caloriesmodal').append(manageContent);
         };
 
         // POST: add new calories to api
         document.querySelector('.form').addEventListener('submit', (event) => {
             event.preventDefault();
 
-            const formdata = new FormData(event.target)
-            const todatatime = `${formdata.get('measurement_date')}T${formdata.get('measurement_time')}`
+            const formData = new FormData(event.target)
+            const toDataTime = `${formData.get('measurement_date')}T${formData.get('measurement_time')}`
 
             const token = sessionStorage.getItem('token')
             
 
             // POST - Add calories api
             const apiaddcalories = async () => {
-                const response = await fetch('http://127.0.0.1:8000/caloriesburned/', {
-                    mode: 'cors',
-                    credentials: 'same-origin',
-                    method: 'POST',
-                    headers: {                    
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`                
-                    },
-                    body: JSON.stringify({
-                        'user': token,
-                        'kcal': formdata.get('kcal'),
-                        'measurement_date': todatatime
-    
-                    })
-                })
-    
+
+                const body = {
+                    'kcal': formData.get('kcal'),
+                    'measurement_date': toDataTime
+                };
+
+                const response = await createFunction('caloriesburned', body)
     
                 if (response.ok) {
-                    const data = response.json()
-                    
-                    const infomodal = document.createElement('div');
-                    infomodal.classList.add('infomodal', 'success');
+                    const infoModal = document.createElement('div');
+                    infoModal.classList.add('infomodal', 'success');
 
-                    const infocontent = document.createElement('div');
-                    infocontent.classList.add('infocontent');
-                    infocontent.textContent = 'Success';
+                    const infoContent = document.createElement('div');
+                    infoContent.classList.add('infocontent');
+                    infoContent.textContent = 'Success';
 
-                    infomodal.append(infocontent);
+                    infoModal.append(infoContent);
                     
-                    document.querySelector('.managemodal').parentElement.append(infomodal)
+                    document.querySelector('.managemodal').parentElement.append(infoModal)
 
                     // UPDATE CHART
                     // Destroy chart if exist
@@ -308,21 +270,21 @@ export function caloriesFunction(row) {
     });
 
     // CALORIES MANAGE: DELETE
-    const deletedata = document.createElement('div');
-    deletedata.classList.add('manage', 'deletedata');
-    deletedata.textContent='delete';
+    const deleteData = document.createElement('div');
+    deleteData.classList.add('manage', 'deletedata');
+    deleteData.textContent='delete';
 
-    deletedata.addEventListener('click', () => {
+    deleteData.addEventListener('click', () => {
 
-        const managecontent = document.createElement('div');
-        managecontent.classList.add('managecontent', 'deletedata');
+        const manageContent = document.createElement('div');
+        manageContent.classList.add('managecontent', 'deletedata');
 
-        const formmodal = document.createElement('div');
-        formmodal.classList.add('formmodal');
+        const formModal = document.createElement('div');
+        formModal.classList.add('formmodal');
 
-        const createform = document.createElement('form');
-        createform.classList.add('form', 'update');
-        createform.innerHTML = `
+        const createForm = document.createElement('form');
+        createForm.classList.add('form', 'update');
+        createForm.innerHTML = `
         <label>Select data: </label>
         <select id='selectdata'>
         </select>
@@ -333,34 +295,34 @@ export function caloriesFunction(row) {
 
         // SELECT - append new option with data
         const apicaloriesdata = async () => {
-            const token = sessionStorage.getItem('token')
-            const response = await fetch('http://127.0.0.1:8000/caloriesburned/', {
-                mode: 'cors',
-                credentials: "same-origin",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                }
-            })
+
+            // const response = await fetch('http://127.0.0.1:8000/caloriesburned/', {
+            //     mode: 'cors',
+            //     credentials: "same-origin",
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         'Authorization': `Token ${token}`
+            //     }
+            // })
     
+            const response = await responseFunction('caloriesburned');
+
             // Response verification
             if (response.ok) {
-                const caloriesdata = await response.json()
-                const sortedcaloriesdata = caloriesdata.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
+                const caloriesData = await response.json()
+                const sortedCaloriesData = caloriesData.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
                 
                 // Append select with meseaurment data
 
-                const selectelement = document.querySelector('#selectdata')
-
-                sortedcaloriesdata.forEach(element => {
+                sortedCaloriesData.forEach(element => {
                     const option = document.createElement('option');
-                    const datetime = new Date (element.measurement_date)
-                    const date = datetime.toISOString().split('T')[0];
-                    const time = datetime.toISOString().split('T')[1].split('.')[0]
+                    const dateTime = new Date (element.measurement_date)
+                    const date = dateTime.toISOString().split('T')[0];
+                    const time = dateTime.toISOString().split('T')[1].split('.')[0]
 
                     option.textContent = `${date} ${time} - calories: ${element.kcal}`;
                     option.value = element.id;
-                    createform.querySelector('select').appendChild(option);
+                    createForm.querySelector('select').appendChild(option);
 
                 });
 
@@ -375,8 +337,8 @@ export function caloriesFunction(row) {
         apicaloriesdata()
 
 
-        formmodal.appendChild(createform);
-        managecontent.appendChild(formmodal);
+        formModal.appendChild(createForm);
+        manageContent.appendChild(formModal);
 
 
         if (!document.querySelector('.managecontent.deletedata')) {
@@ -384,37 +346,28 @@ export function caloriesFunction(row) {
             document.querySelectorAll('.managecontent').forEach((element) => {
                 element.remove();
             });
-            document.querySelector('.caloriesmodal').append(managecontent);
+            document.querySelector('.caloriesmodal').append(manageContent);
         };
 
         // Event listener - delete
         document.querySelector('form').addEventListener('submit', (element)=> {
             element.preventDefault()
-            const deletedata = async () => {
-                const token = sessionStorage.getItem('token');
+            const deleteData = async () => {
                 const id = document.querySelector('select').value
-                const response = await fetch(`http://127.0.0.1:8000/caloriesburned/${id}/`, {
-                    mode: 'cors',
-                    credentials: "same-origin",
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Token ${token}`
-                    }
-                })
 
+                const response = await deleteFunction('caloriesburned', id);
                 if (response.ok) {
 
-                    const infomodal = document.createElement('div');
-                    infomodal.classList.add('infomodal', 'success');
+                    const infoModal = document.createElement('div');
+                    infoModal.classList.add('infomodal', 'success');
 
-                    const infocontent = document.createElement('div');
-                    infocontent.classList.add('infocontent');
-                    infocontent.textContent = 'Deleted!';
+                    const infoContent = document.createElement('div');
+                    infoContent.classList.add('infocontent');
+                    infoContent.textContent = 'Deleted!';
 
-                    infomodal.append(infocontent);
+                    infoModal.append(infoContent);
                     
-                    document.querySelector('.managemodal').parentElement.append(infomodal)
+                    document.querySelector('.managemodal').parentElement.append(infoModal)
 
                     // UPDATE CHART
                     // Destroy chart if exist
@@ -427,10 +380,8 @@ export function caloriesFunction(row) {
                                             },                    
                                             ['kcal', 1], ['', 3]);
                     // Remove removed option
-                    const toremove = document.querySelector('select');
-                    toremove.remove(toremove.selectedIndex);
-
-                    
+                    const toRemove = document.querySelector('select');
+                    toRemove.remove(toRemove.selectedIndex);
 
                     // Delete succes bar
                     setTimeout( () => {
@@ -439,7 +390,7 @@ export function caloriesFunction(row) {
                 }
 
             }
-            deletedata()
+            deleteData()
         })
 
 
@@ -448,7 +399,7 @@ export function caloriesFunction(row) {
     // Append UPDATE CREATE DELETE
     manageModal.appendChild(update);
     manageModal.appendChild(create);
-    manageModal.appendChild(deletedata);
+    manageModal.appendChild(deleteData);
     caloriesModal.firstChild.appendChild(manageModal);
 
     // CHART

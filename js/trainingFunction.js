@@ -1,46 +1,33 @@
 import { today, baseModal } from './views';
 import { createChartwithApiData, chartModalFunction } from './chartFunction';
+import { createFunction, deleteFunction, responseFunction, updateFunction } from './tools';
+
 
 export function trainingFunction(row) {
 
     const getTrainingList = async () => {
         // SELECT - append new option with list of trainings
-        const token = sessionStorage.getItem('token');
-        const response = await fetch('http://127.0.0.1:8000/traininglist/', {
-            mode: 'cors',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${token}`
-            }
-        });
-        
-    // Response verification
-    if (response.ok) {
-        const trainingList = await response.json();
 
-        // append training list in form
-        const select = document.querySelector('#traininglist');
-        trainingList.forEach( (element) => {
-            const option = document.createElement('option');
-            option.textContent = element.training_name;
-            option.value = element.key;
-            select.appendChild(option);
-        })
-    }
-    };
+        const response = await responseFunction('traininglist');
+        
+        // Response verification
+        if (response.ok) {
+            const trainingList = await response.json();
+
+            // append training list in form
+            const select = document.querySelector('#traininglist');
+            trainingList.forEach( (element) => {
+                const option = document.createElement('option');
+                option.textContent = element.training_name;
+                option.value = element.key;
+                select.appendChild(option);
+            })
+        }
+        };
 
     const apiTrainingData = async () => {
         // Function which fill form with sport avalible to choose
-        const token = sessionStorage.getItem('token')
-        const response = await fetch('http://127.0.0.1:8000/training/', {
-            mode: 'cors',
-            credentials: "same-origin",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${token}`
-            }
-        })
+        const response = await responseFunction('training');
 
         // Response verification
         if (response.ok) {
@@ -48,18 +35,15 @@ export function trainingFunction(row) {
             const sortedTrainingData = trainingData.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
             
             // Append select with meseaurment data
-
-            const selectelement = document.querySelector('#selectdata')
             sortedTrainingData.forEach(element => {
                 const option = document.createElement('option');
-                const datetime = new Date (element.measurement_date)
-                const date = datetime.toISOString().split('T')[0];
-                const time = datetime.toISOString().split('T')[1].split('.')[0]
+                const dateTime = new Date (element.measurement_date)
+                const date = dateTime.toISOString().split('T')[0];
+                const time = dateTime.toISOString().split('T')[1].split('.')[0]
 
                 option.textContent = `${date} ${time} - training: ${element.training} - duration: ${element.training_time}`;
                 option.value = element.id;
                 document.querySelector('select').appendChild(option);
-
             });
 
 
@@ -74,7 +58,6 @@ export function trainingFunction(row) {
     const modalArray = [];
 
     // Trainging manage console: Update, Create, Delete
-
     const trainingModal = baseModal(row);
     trainingModal.firstChild.classList.add('trainingmodal');
 
@@ -89,15 +72,15 @@ export function trainingFunction(row) {
 
     update.addEventListener('click', () => {
 
-        const managecontent = document.createElement('div');
-        managecontent.classList.add('managecontent', 'update');
+        const manageContent = document.createElement('div');
+        manageContent.classList.add('managecontent', 'update');
 
-        const formmodal = document.createElement('div');
-        formmodal.classList.add('formmodal');
+        const formModal = document.createElement('div');
+        formModal.classList.add('formmodal');
 
-        const createform = document.createElement('form');
-        createform.classList.add('form', 'update');
-        createform.innerHTML = `
+        const createForm = document.createElement('form');
+        createForm.classList.add('form', 'update');
+        createForm.innerHTML = `
         <label>Select session: </label>
         <select id='selectdata'>
         </select>
@@ -125,93 +108,77 @@ export function trainingFunction(row) {
         `
 
         // Event listener - after selecting data to update fill other fields in form
-        createform.querySelector('select').addEventListener('click', () => {
-            const seleted = createform.querySelector('select')
-            var selectedOption = seleted.options[seleted.selectedIndex];
+        createForm.querySelector('select').addEventListener('click', () => {
+            const selected = createForm.querySelector('select')
+            var selectedOption = selected.options[selected.selectedIndex];
 
-            const trainingInput = createform.querySelector('#traininglist');
-            const dateinput = createform.querySelector('#measurement_date');
-            const tieminput = createform.querySelector('#measurement_time');
-            const durationhoursinput = createform.querySelector('#durationhours');
-            const durationminutesinput = createform.querySelector('#durationminutes');
-            const durationsecondsinput = createform.querySelector('#durationseconds');
+            const trainingInput = createForm.querySelector('#traininglist');
+            const dateInput = createForm.querySelector('#measurement_date');
+            const tiemInput = createForm.querySelector('#measurement_time');
+            const durationHoursInput = createForm.querySelector('#durationhours');
+            const durationMinutesInput = createForm.querySelector('#durationminutes');
+            const durationSecondsInput = createForm.querySelector('#durationseconds');
 
-            const measurementdata = selectedOption.textContent.split(" ");
-            const measurementDataTraining = measurementdata[4];
-            const measurementdatadate = measurementdata[0];
-            const measurementdatatime = measurementdata[1];
-            const measurementduration = measurementdata[measurementdata.length - 1].split(":")
+            const measurementData = selectedOption.textContent.split(" ");
+            const measurementDataTraining = measurementData[4];
+            const measurementDataDate = measurementData[0];
+            const measurementDataTime = measurementData[1];
+            const measurementDuration = measurementData[measurementData.length - 1].split(":")
 
             trainingInput.value = measurementDataTraining
-            dateinput.value = measurementdatadate;
-            tieminput.value = measurementdatatime;
-            durationhoursinput.value = measurementduration[0];
-            durationminutesinput.value = measurementduration[1];
-            durationsecondsinput.value = measurementduration[2];
-
-
-
-
-        })
+            dateInput.value = measurementDataDate;
+            tiemInput.value = measurementDataTime;
+            durationHoursInput.value = measurementDuration[0];
+            durationMinutesInput.value = measurementDuration[1];
+            durationSecondsInput.value = measurementDuration[2];
+        });
 
 
         // Fill form with Sport avalible to choose
         apiTrainingData();
 
-        formmodal.appendChild(createform);
-        managecontent.appendChild(formmodal);
+        formModal.appendChild(createForm);
+        manageContent.appendChild(formModal);
 
         if (!document.querySelector('.managecontent.update')) {
             // If the .managecontent.update not exist -> show the managecontetn update modal
             document.querySelectorAll('.managecontent').forEach((element) => {
                 element.remove();
             });            
-            document.querySelector('.trainingmodal').append(managecontent);
+            document.querySelector('.trainingmodal').append(manageContent);
         };
 
         // Update button
         document.querySelector('.form').addEventListener('submit', (event) => {
             event.preventDefault();
 
-            const formdata = new FormData(event.target)
-            const meseaurmentid = parseInt(document.querySelector('select').value)
-            const token = sessionStorage.getItem('token');
-            const duration = `${formdata.get('durationhours')}:${formdata.get('durationminutes')}:${formdata.get('durationseconds')}`;
-            const measurement_date_time = `${formdata.get('measurement_date')}T${formdata.get('measurement_time')}Z`
-
-        
+            const formData = new FormData(event.target)
+            const meseaurmentId = parseInt(document.querySelector('select').value)
+            const duration = `${formData.get('durationhours')}:${formData.get('durationminutes')}:${formData.get('durationseconds')}`;
+            const measurementDateTime = `${formData.get('measurement_date')}T${formData.get('measurement_time')}Z`
 
             // PUT - update training
             const updateTrainingData = async() => {
-                const response = await fetch(`http://127.0.0.1:8000/training/${meseaurmentid}/`, {
-                    mode: 'cors',
-                    credentials: 'same-origin',
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Token ${token}`
-                    },
-                    body: JSON.stringify({
-                        'user': token,
-                        'training': formdata.get('training'),
-                        'measurement_date': measurement_date_time,
-                        'training_time': duration,
-                    })
-                })
+                const body = {
+                    'training': formData.get('training'),
+                    'measurement_date': measurementDateTime,
+                    'training_time': duration,
+                };
+
+                const response = await updateFunction('training', meseaurmentId, body);
 
                 if (response.ok) {
-                    const data = response.json();
 
-                    const infomodal = document.createElement('div');
-                    infomodal.classList.add('infomodal', 'success');
+                    const infoModal = document.createElement('div');
+                    infoModal.classList.add('infomodal', 'success');
 
-                    const infocontent = document.createElement('div');
-                    infocontent.classList.add('infocontent');
-                    infocontent.textContent = 'Updated!';
+                    const infoContent = document.createElement('div');
+                    infoContent.classList.add('infocontent');
+                    infoContent.textContent = 'Updated!';
 
-                    infomodal.append(infocontent);
+                    infoModal.append(infoContent);
                     
-                    document.querySelector('.managemodal').parentElement.append(infomodal)
+                    document.querySelector('.managemodal').parentElement.append(infoModal)
 
                     // UPDATE CHART
                     // Destroy chart if exist
@@ -233,7 +200,6 @@ export function trainingFunction(row) {
             }
             updateTrainingData();
 
-
         });
 
         getTrainingList();
@@ -246,15 +212,15 @@ export function trainingFunction(row) {
     create.textContent='create';
 
     create.addEventListener('click', () => {
-        const managecontent = document.createElement('div');
-        managecontent.classList.add('managecontent', 'create');
+        const manageContent = document.createElement('div');
+        manageContent.classList.add('managecontent', 'create');
 
-        const formmodal = document.createElement('div');
-        formmodal.classList.add('formmodal');
+        const formModal = document.createElement('div');
+        formModal.classList.add('formmodal');
 
-        const createform = document.createElement('form');
-        createform.classList.add('form', 'create');
-        createform.innerHTML = `
+        const createForm = document.createElement('form');
+        createForm.classList.add('form', 'create');
+        createForm.innerHTML = `
         <label>Training:</label>
         <select id='traininglist' name='training'>
         </select>
@@ -276,14 +242,14 @@ export function trainingFunction(row) {
         <button type="submit" id="submit">Create</button>
 
         `
-        createform.querySelector('#measurement_date').value = now[0];
-        createform.querySelector('#measurement_time').value = now[1];
+        createForm.querySelector('#measurement_date').value = now[0];
+        createForm.querySelector('#measurement_time').value = now[1];
         
 
         // Fill form with Sport avalible to choose
         getTrainingList();
-        formmodal.appendChild(createform);
-        managecontent.appendChild(formmodal);
+        formModal.appendChild(createForm);
+        manageContent.appendChild(formModal);
 
         
 
@@ -292,41 +258,27 @@ export function trainingFunction(row) {
             document.querySelectorAll('.managecontent').forEach((element) => {
                 element.remove();
             });
-            document.querySelector('.trainingmodal').append(managecontent);
+            document.querySelector('.trainingmodal').append(manageContent);
         };
 
         // POST: add new training to api
         document.querySelector('.form').addEventListener('submit', (event) => {
             event.preventDefault();
 
-            const formdata = new FormData(event.target)
-            const todatatime = `${formdata.get('measurement_date')}T${formdata.get('measurement_time')}`
-            const duration = `${formdata.get('durationhours')}:${formdata.get('durationminutes')}:${formdata.get('durationseconds')}`;
-            const token = sessionStorage.getItem('token')
-            
+            const formData = new FormData(event.target)
+            const toDataTime = `${formData.get('measurement_date')}T${formData.get('measurement_time')}`
+            const duration = `${formData.get('durationhours')}:${formData.get('durationminutes')}:${formData.get('durationseconds')}`;
 
             // POST - Add training api
             const apiAddTraining = async () => {
-                const response = await fetch('http://127.0.0.1:8000/training/', {
-                    mode: 'cors',
-                    credentials: 'same-origin',
-                    method: 'POST',
-                    headers: {                    
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`                
-                    },
-                    body: JSON.stringify({
-                        'user': token,
-                        'training': formdata.get('training'),
-                        'measurement_date': todatatime,
-                        'training_time': duration
-    
-                    })
-                })
-    
+                const body = {
+                    'training': formData.get('training'),
+                    'measurement_date': toDataTime,
+                    'training_time': duration
+                }
+                const response = await createFunction('training', body)
     
                 if (response.ok) {
-                    const data = response.json()
                     
                     const infomodal = document.createElement('div');
                     infomodal.classList.add('infomodal', 'success');
@@ -371,21 +323,21 @@ export function trainingFunction(row) {
     });
 
     // TRAINING MANAGE: DELETE
-    const deletedata = document.createElement('div');
-    deletedata.classList.add('manage', 'deletedata');
-    deletedata.textContent='delete';
+    const deleteData = document.createElement('div');
+    deleteData.classList.add('manage', 'deletedata');
+    deleteData.textContent='delete';
 
-    deletedata.addEventListener('click', () => {
+    deleteData.addEventListener('click', () => {
 
-        const managecontent = document.createElement('div');
-        managecontent.classList.add('managecontent', 'deletedata');
+        const manageContent = document.createElement('div');
+        manageContent.classList.add('managecontent', 'deletedata');
 
-        const formmodal = document.createElement('div');
-        formmodal.classList.add('formmodal');
+        const formModal = document.createElement('div');
+        formModal.classList.add('formmodal');
 
-        const createform = document.createElement('form');
-        createform.classList.add('form', 'update');
-        createform.innerHTML = `
+        const createForm = document.createElement('form');
+        createForm.classList.add('form', 'update');
+        createForm.innerHTML = `
         <label>Select data: </label>
         <select id='selectdata'>
         </select>
@@ -396,15 +348,8 @@ export function trainingFunction(row) {
 
         // SELECT - append new option with data
         const apiTrainingData = async () => {
-            const token = sessionStorage.getItem('token')
-            const response = await fetch('http://127.0.0.1:8000/training/', {
-                mode: 'cors',
-                credentials: "same-origin",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                }
-            })
+            
+            const response = await responseFunction('training')
     
             // Response verification
             if (response.ok) {
@@ -412,18 +357,15 @@ export function trainingFunction(row) {
                 const sortedTrainingData = trainingData.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
                 
                 // Append select with meseaurment data
-
-                const selectelement = document.querySelector('#selectdata')
-
                 sortedTrainingData.forEach(element => {
                     const option = document.createElement('option');
-                    const datetime = new Date (element.measurement_date)
-                    const date = datetime.toISOString().split('T')[0];
-                    const time = datetime.toISOString().split('T')[1].split('.')[0]
+                    const dateTime = new Date (element.measurement_date)
+                    const date = dateTime.toISOString().split('T')[0];
+                    const time = dateTime.toISOString().split('T')[1].split('.')[0]
 
                     option.textContent = `${date} ${time} - weight: ${element.training}`;
                     option.value = element.id;
-                    createform.querySelector('select').appendChild(option);
+                    createForm.querySelector('select').appendChild(option);
 
                 });
 
@@ -438,8 +380,8 @@ export function trainingFunction(row) {
         apiTrainingData()
 
 
-        formmodal.appendChild(createform);
-        managecontent.appendChild(formmodal);
+        formModal.appendChild(createForm);
+        manageContent.appendChild(formModal);
 
 
         if (!document.querySelector('.managecontent.deletedata')) {
@@ -447,37 +389,31 @@ export function trainingFunction(row) {
             document.querySelectorAll('.managecontent').forEach((element) => {
                 element.remove();
             });
-            document.querySelector('.trainingmodal').append(managecontent);
+            document.querySelector('.trainingmodal').append(manageContent);
         };
 
         // Event listener - delete
         document.querySelector('form').addEventListener('submit', (element)=> {
             element.preventDefault()
-            const deletedata = async () => {
-                const token = sessionStorage.getItem('token');
+            const deleteData = async () => {
+                // const token = sessionStorage.getItem('token');
                 const id = document.querySelector('select').value
-                const response = await fetch(`http://127.0.0.1:8000/training/${id}/`, {
-                    mode: 'cors',
-                    credentials: "same-origin",
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Token ${token}`
-                    }
-                })
+
+                const response = await deleteFunction('training', id);
 
                 if (response.ok) {
 
-                    const infomodal = document.createElement('div');
-                    infomodal.classList.add('infomodal', 'success');
+                    const infoModal = document.createElement('div');
+                    infoModal.classList.add('infomodal', 'success');
 
-                    const infocontent = document.createElement('div');
-                    infocontent.classList.add('infocontent');
-                    infocontent.textContent = 'Deleted!';
+                    const infoContent = document.createElement('div');
+                    infoContent.classList.add('infocontent');
+                    infoContent.textContent = 'Deleted!';
 
-                    infomodal.append(infocontent);
+                    infoModal.append(infoContent);
                     
-                    document.querySelector('.managemodal').parentElement.append(infomodal)
+                    document.querySelector('.managemodal').parentElement.append(infoModal)
+                    console.log(infoModal);
 
                     // UPDATE CHART
                     // Destroy chart if exist
@@ -502,7 +438,7 @@ export function trainingFunction(row) {
                 }
 
             }
-            deletedata()
+            deleteData()
         })
 
 
@@ -511,7 +447,7 @@ export function trainingFunction(row) {
     // Append {UPDATE CREATE DELETE}
     manageModal.appendChild(update);
     manageModal.appendChild(create);
-    manageModal.appendChild(deletedata);
+    manageModal.appendChild(deleteData);
     trainingModal.firstChild.appendChild(manageModal);
 
     // CHART

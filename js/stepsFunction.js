@@ -352,8 +352,7 @@ export function stepsFunction(row) {
             element.preventDefault()
             const deletedata = async () => {
                 const id = document.querySelector('select').value
-
-                const response = deleteFunction('steps', id);
+                const response = await deleteFunction('steps', id);
 
                 if (response.ok) {
 

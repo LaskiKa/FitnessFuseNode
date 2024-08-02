@@ -1,5 +1,6 @@
 import { today, baseModal } from './views';
 import { createChartwithApiData, chartModalFunction } from './chartFunction';
+import { responseFunction } from './tools';
 
 export function caloriesFunction(row) {
     
@@ -71,15 +72,17 @@ export function caloriesFunction(row) {
 
         // SELECT - append new option with data
         const apicaloriesdata = async () => {
-            const token = sessionStorage.getItem('token')
-            const response = await fetch('http://127.0.0.1:8000/caloriesburned/', {
-                mode: 'cors',
-                credentials: "same-origin",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                }
-            })
+            // const token = sessionStorage.getItem('token')
+            // const response = await fetch('http://127.0.0.1:8000/caloriesburned/', {
+            //     mode: 'cors',
+            //     credentials: "same-origin",
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         'Authorization': `Token ${token}`
+            //     }
+            // })
+            const response = await responseFunction('caloriesburned');
+            console.log(response);
     
             // Response verification
             if (response.ok) {
@@ -88,7 +91,7 @@ export function caloriesFunction(row) {
                 
                 // Append select with meseaurment data
 
-                const selectelement = document.querySelector('#selectdata')
+                // const selectelement = document.querySelector('#selectdata')
                 sortedcaloriesdata.forEach(element => {
                     const option = document.createElement('option');
                     const datetime = new Date (element.measurement_date)
@@ -168,7 +171,11 @@ export function caloriesFunction(row) {
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getCalories();
+                    createChartwithApiData('caloriesburned', 'line', 'Burned calories by date', 
+                                            {type: 'time',
+                                                time: {unit: 'day'}
+                                            },                    
+                                            ['kcal', 1], ['', 3]);
 
                     // Delete succes bar
                     setTimeout( () => {
@@ -276,7 +283,11 @@ export function caloriesFunction(row) {
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getCalories();
+                    createChartwithApiData('caloriesburned', 'line', 'Burned calories by date', 
+                                            {type: 'time',
+                                                time: {unit: 'day'}
+                                            },                    
+                                            ['kcal', 1], ['', 3]);
                     document.querySelector('.form').reset();
 
                     // Delete succes bar
@@ -410,7 +421,11 @@ export function caloriesFunction(row) {
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getCalories();
+                    createChartwithApiData('caloriesburned', 'line', 'Burned calories by date', 
+                                            {type: 'time',
+                                                time: {unit: 'day'}
+                                            },                    
+                                            ['kcal', 1], ['', 3]);
                     // Remove removed option
                     const toremove = document.querySelector('select');
                     toremove.remove(toremove.selectedIndex);

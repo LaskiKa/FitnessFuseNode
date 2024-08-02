@@ -1,6 +1,7 @@
 // View: Steps
 import { today, baseModal } from './views';
 import { createChartwithApiData, chartModalFunction } from './chartFunction';
+import { createFunction, deleteFunction, responseFunction, updateFunction } from './tools';
 
 export function stepsFunction(row) {
 
@@ -23,15 +24,15 @@ export function stepsFunction(row) {
  
     update.addEventListener('click', () => {
 
-        const managecontent = document.createElement('div');
-        managecontent.classList.add('managecontent', 'update');
+        const manageContent = document.createElement('div');
+        manageContent.classList.add('managecontent', 'update');
 
-        const formmodal = document.createElement('div');
-        formmodal.classList.add('formmodal');
+        const formModal = document.createElement('div');
+        formModal.classList.add('formmodal');
 
-        const createform = document.createElement('form');
-        createform.classList.add('form', 'update');
-        createform.innerHTML = `
+        const createForm = document.createElement('form');
+        createForm.classList.add('form', 'update');
+        createForm.innerHTML = `
         <label>Select data: </label>
         <select id='selectdata'>
         </select>
@@ -50,55 +51,46 @@ export function stepsFunction(row) {
         `
 
         // Event listener - after selecting data to update fill other fields in form
-        createform.querySelector('select').addEventListener('click', () => {
-            const seleted = createform.querySelector('select')
+        createForm.querySelector('select').addEventListener('click', () => {
+            const seleted = createForm.querySelector('select')
             var selectedOption = seleted.options[seleted.selectedIndex];
 
-            const stepsinput = createform.querySelector('#steps');
-            const dateinput = createform.querySelector('#measurement_date');
-            const tieminput = createform.querySelector('#measurement_time');
+            const stepsInput = createForm.querySelector('#steps');
+            const dateInput = createForm.querySelector('#measurement_date');
+            const tiemInput = createForm.querySelector('#measurement_time');
 
-            const measurementdata = selectedOption.textContent.split(" ");
-            const measurementdataweight = measurementdata[measurementdata.length -1];
-            const measurementdatadate = measurementdata[0];
-            const measurementdatatime = measurementdata[1];
+            const measurementData = selectedOption.textContent.split(" ");
+            const measurementDataWeight = measurementData[measurementData.length -1];
+            const measurementDataDate = measurementData[0];
+            const measurementDataTime = measurementData[1];
 
-            stepsinput.value = measurementdataweight;
-            dateinput.value = measurementdatadate;
-            tieminput.value = measurementdatatime;
-
+            stepsInput.value = measurementDataWeight;
+            dateInput.value = measurementDataDate;
+            tiemInput.value = measurementDataTime;
 
         })
 
         // SELECT - append new option with data
-        const apistepsdata = async () => {
-            const token = sessionStorage.getItem('token')
-            const response = await fetch('http://127.0.0.1:8000/steps/', {
-                mode: 'cors',
-                credentials: "same-origin",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                }
-            })
+        const apiStepsData = async () => {
+
+            const response = await responseFunction('steps');
     
             // Response verification
             if (response.ok) {
-                const stepsdata = await response.json()
-                const sortedstepsdata = stepsdata.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
+                const stepsData = await response.json()
+                const sortedStepsData = stepsData.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
                 
                 // Append select with meseaurment data
 
-                const selectelement = document.querySelector('#selectdata')
-                sortedstepsdata.forEach(element => {
+                sortedStepsData.forEach(element => {
                     const option = document.createElement('option');
-                    const datetime = new Date (element.measurement_date)
-                    const date = datetime.toISOString().split('T')[0];
-                    const time = datetime.toISOString().split('T')[1].split('.')[0]
+                    const dateTime = new Date (element.measurement_date)
+                    const date = dateTime.toISOString().split('T')[0];
+                    const time = dateTime.toISOString().split('T')[1].split('.')[0]
 
                     option.textContent = `${date} ${time} - steps: ${element.steps}`;
                     option.value = element.id;
-                    createform.querySelector('select').appendChild(option);
+                    createForm.querySelector('select').appendChild(option);
 
                 });
 
@@ -110,66 +102,58 @@ export function stepsFunction(row) {
             }
         };
         
-        apistepsdata()
+        apiStepsData()
 
-
-        formmodal.appendChild(createform);
-        managecontent.appendChild(formmodal);
+        formModal.appendChild(createForm);
+        manageContent.appendChild(formModal);
 
         if (!document.querySelector('.managecontent.update')) {
             // If the .managecontent.update not exist -> show the managecontetn update modal
             document.querySelectorAll('.managecontent').forEach((element) => {
                 element.remove();
             });            
-            document.querySelector('.stepsmodal').append(managecontent);
+            document.querySelector('.stepsmodal').append(manageContent);
         };
 
         // Update button
         document.querySelector('.form').addEventListener('submit', (event) => {
             event.preventDefault();
 
-            const formdata = new FormData(event.target)
-            const meseaurmentid = parseInt(document.querySelector('select').value)
-            const newdate = `${formdata.get('measurement_date')}T${formdata.get('measurement_time')}`
-            const token = sessionStorage.getItem('token');
+            const formData = new FormData(event.target)
+            const meseaurmentId = parseInt(document.querySelector('select').value)
+            const newDate = `${formData.get('measurement_date')}T${formData.get('measurement_time')}`
 
             // PUT - update steps
-            const updatestepsdata = async() => {
-                const response = await fetch(`http://127.0.0.1:8000/steps/${meseaurmentid}/`, {
-                    mode: 'cors',
-                    credentials: 'same-origin',
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Token ${token}`
-                    },
-                    body: JSON.stringify({
-                        'user': token,
-                        'steps': formdata.get('steps'),
-                        'measurement_date': newdate
-                    })
-                })
+            const updateStepsData = async() => {
+                const body = {
+                    'steps': formData.get('steps'),
+                    'measurement_date': newDate
+                }
+                const response = await updateFunction('steps', meseaurmentId, body)
 
                 if (response.ok) {
-                    const data = response.json();
 
-                    const infomodal = document.createElement('div');
-                    infomodal.classList.add('infomodal', 'success');
+                    const infoModal = document.createElement('div');
+                    infoModal.classList.add('infomodal', 'success');
 
-                    const infocontent = document.createElement('div');
-                    infocontent.classList.add('infocontent');
-                    infocontent.textContent = 'Updated!';
+                    const infoContent = document.createElement('div');
+                    infoContent.classList.add('infocontent');
+                    infoContent.textContent = 'Updated!';
 
-                    infomodal.append(infocontent);
+                    infoModal.append(infoContent);
                     
-                    document.querySelector('.managemodal').parentElement.append(infomodal)
+                    document.querySelector('.managemodal').parentElement.append(infoModal)
 
                     // UPDATE CHART
                     // Destroy chart if exist
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getSteps();
+                    createChartwithApiData('steps', 'bar', 'Steps by date', 
+                                            {type: 'time',
+                                                time: {unit: 'day'}
+                                            },
+                                            ['steps', 1], ['',3]);
 
                     // Delete succes bar
                     setTimeout( () => {
@@ -177,11 +161,10 @@ export function stepsFunction(row) {
                     }, 3000);
                 }
             }
-            updatestepsdata();
 
+            updateStepsData();
 
         });
-
 
     });   
 
@@ -192,15 +175,15 @@ export function stepsFunction(row) {
     create.textContent='create';
 
     create.addEventListener('click', () => {
-        const managecontent = document.createElement('div');
-        managecontent.classList.add('managecontent', 'create');
+        const manageContent = document.createElement('div');
+        manageContent.classList.add('managecontent', 'create');
 
-        const formmodal = document.createElement('div');
-        formmodal.classList.add('formmodal');
+        const formModal = document.createElement('div');
+        formModal.classList.add('formmodal');
 
-        const createform = document.createElement('form');
-        createform.classList.add('form', 'create');
-        createform.innerHTML = `
+        const createForm = document.createElement('form');
+        createForm.classList.add('form', 'create');
+        createForm.innerHTML = `
         <label>Steps:</label>
         <input type="number" id="steps" name="steps" required>
 
@@ -213,12 +196,12 @@ export function stepsFunction(row) {
         <button type="submit" id="submit">Submit</button>
 
         `
-        createform.querySelector('#measurement_date').value = now[0];
-        createform.querySelector('#measurement_time').value = now[1];
+        createForm.querySelector('#measurement_date').value = now[0];
+        createForm.querySelector('#measurement_time').value = now[1];
         
 
-        formmodal.appendChild(createform);
-        managecontent.appendChild(formmodal);
+        formModal.appendChild(createForm);
+        manageContent.appendChild(formModal);
         
 
         if (!document.querySelector('.managecontent.create')) {
@@ -226,7 +209,7 @@ export function stepsFunction(row) {
             document.querySelectorAll('.managecontent').forEach((element) => {
                 element.remove();
             });
-            document.querySelector('.stepsmodal').append(managecontent);
+            document.querySelector('.stepsmodal').append(manageContent);
         };
 
         // POST: add new steps to api
@@ -241,43 +224,39 @@ export function stepsFunction(row) {
 
             // POST - Add steps api
             const apiaddsteps = async () => {
-                const response = await fetch('http://127.0.0.1:8000/steps/', {
-                    mode: 'cors',
-                    credentials: 'same-origin',
-                    method: 'POST',
-                    headers: {                    
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`                
-                    },
-                    body: JSON.stringify({
-                        'user': token,
+
+                const body = {
                         'steps': formdata.get('steps'),
                         'measurement_date': todatatime
-    
-                    })
-                })
-    
+                }
+
+                const response = await createFunction('steps', body)
     
                 if (response.ok) {
-                    const data = response.json()
                     
-                    const infomodal = document.createElement('div');
-                    infomodal.classList.add('infomodal', 'success');
+                    const infoModal = document.createElement('div');
+                    infoModal.classList.add('infomodal', 'success');
 
-                    const infocontent = document.createElement('div');
-                    infocontent.classList.add('infocontent');
-                    infocontent.textContent = 'Success';
+                    const infoContent = document.createElement('div');
+                    infoContent.classList.add('infocontent');
+                    infoContent.textContent = 'Success';
 
-                    infomodal.append(infocontent);
+                    infoModal.append(infoContent);
                     
-                    document.querySelector('.managemodal').parentElement.append(infomodal)
+                    document.querySelector('.managemodal').parentElement.append(infoModal)
 
                     // UPDATE CHART
                     // Destroy chart if exist
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getSteps();
+
+                    createChartwithApiData('steps', 'bar', 'Steps by date', 
+                                            {type: 'time',
+                                                time: {unit: 'day'}
+                                            },
+                                            ['steps', 1], ['',3]);
+
                     document.querySelector('.form').reset();
 
                     // Delete succes bar
@@ -298,21 +277,21 @@ export function stepsFunction(row) {
     });
 
     // STEPS MANAGE: DELETE
-    const deletedata = document.createElement('div');
-    deletedata.classList.add('manage', 'deletedata');
-    deletedata.textContent='delete';
+    const deleteData = document.createElement('div');
+    deleteData.classList.add('manage', 'deletedata');
+    deleteData.textContent='delete';
 
-    deletedata.addEventListener('click', () => {
+    deleteData.addEventListener('click', () => {
 
-        const managecontent = document.createElement('div');
-        managecontent.classList.add('managecontent', 'deletedata');
+        const manageContent = document.createElement('div');
+        manageContent.classList.add('managecontent', 'deletedata');
 
-        const formmodal = document.createElement('div');
-        formmodal.classList.add('formmodal');
+        const formModal = document.createElement('div');
+        formModal.classList.add('formmodal');
 
-        const createform = document.createElement('form');
-        createform.classList.add('form', 'update');
-        createform.innerHTML = `
+        const createForm = document.createElement('form');
+        createForm.classList.add('form', 'update');
+        createForm.innerHTML = `
         <label>Select data: </label>
         <select id='selectdata'>
         </select>
@@ -322,27 +301,18 @@ export function stepsFunction(row) {
         `
 
         // SELECT - append new option with data
-        const apistepsdata = async () => {
-            const token = sessionStorage.getItem('token')
-            const response = await fetch('http://127.0.0.1:8000/steps/', {
-                mode: 'cors',
-                credentials: "same-origin",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                }
-            })
+        const apiStepsData = async () => {
+
+            const response = await responseFunction('steps');
     
             // Response verification
             if (response.ok) {
-                const stepsdata = await response.json()
-                const sortedstepsdata = stepsdata.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
+                const stepsData = await response.json()
+                const sortedStepsData = stepsData.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
                 
                 // Append select with meseaurment data
 
-                const selectelement = document.querySelector('#selectdata')
-
-                sortedstepsdata.forEach(element => {
+                sortedStepsData.forEach(element => {
                     const option = document.createElement('option');
                     const datetime = new Date (element.measurement_date)
                     const date = datetime.toISOString().split('T')[0];
@@ -350,7 +320,7 @@ export function stepsFunction(row) {
 
                     option.textContent = `${date} ${time} - steps: ${element.steps}`;
                     option.value = element.id;
-                    createform.querySelector('select').appendChild(option);
+                    createForm.querySelector('select').appendChild(option);
 
                 });
 
@@ -362,11 +332,11 @@ export function stepsFunction(row) {
             }
         };
         
-        apistepsdata()
+        apiStepsData()
 
 
-        formmodal.appendChild(createform);
-        managecontent.appendChild(formmodal);
+        formModal.appendChild(createForm);
+        manageContent.appendChild(formModal);
 
 
         if (!document.querySelector('.managecontent.deletedata')) {
@@ -374,47 +344,45 @@ export function stepsFunction(row) {
             document.querySelectorAll('.managecontent').forEach((element) => {
                 element.remove();
             });
-            document.querySelector('.stepsmodal').append(managecontent);
+            document.querySelector('.stepsmodal').append(manageContent);
         };
 
         // Event listener - delete
         document.querySelector('form').addEventListener('submit', (element)=> {
             element.preventDefault()
             const deletedata = async () => {
-                const token = sessionStorage.getItem('token');
                 const id = document.querySelector('select').value
-                const response = await fetch(`http://127.0.0.1:8000/steps/${id}/`, {
-                    mode: 'cors',
-                    credentials: "same-origin",
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Token ${token}`
-                    }
-                })
+
+                const response = deleteFunction('steps', id);
 
                 if (response.ok) {
 
-                    const infomodal = document.createElement('div');
-                    infomodal.classList.add('infomodal', 'success');
+                    const infoModal = document.createElement('div');
+                    infoModal.classList.add('infomodal', 'success');
 
-                    const infocontent = document.createElement('div');
-                    infocontent.classList.add('infocontent');
-                    infocontent.textContent = 'Deleted!';
+                    const infoContent = document.createElement('div');
+                    infoContent.classList.add('infocontent');
+                    infoContent.textContent = 'Deleted!';
 
-                    infomodal.append(infocontent);
+                    infoModal.append(infoContent);
                     
-                    document.querySelector('.managemodal').parentElement.append(infomodal)
+                    document.querySelector('.managemodal').parentElement.append(infoModal);
 
                     // UPDATE CHART
                     // Destroy chart if exist
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getSteps();
+
+                    createChartwithApiData('steps', 'bar', 'Steps by date', 
+                                            {type: 'time',
+                                                time: {unit: 'day'}
+                                            },
+                                            ['steps', 1], ['',3]);
+
                     // Remove removed option
-                    const toremove = document.querySelector('select');
-                    toremove.remove(toremove.selectedIndex);
+                    const toRemove = document.querySelector('select');
+                    toRemove.remove(toRemove.selectedIndex);
 
                     // Delete succes bar
                     setTimeout( () => {
@@ -432,7 +400,7 @@ export function stepsFunction(row) {
     // Append UPDATE CREATE DELETE
     manageModal.appendChild(update);
     manageModal.appendChild(create);
-    manageModal.appendChild(deletedata);
+    manageModal.appendChild(deleteData);
     stepsModal.firstChild.appendChild(manageModal);
 
 

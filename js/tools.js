@@ -23,11 +23,6 @@ export const methodFunction = (methodNumber, property) => {
     }
 };
 
-
-// ZAMIAST METHOD 
-// ZROBIĆ FUNKCJE, KTÓRA PRZYJMUJE PROPERTY ORAZ NUMER I ZWRACA KONKRETNA FUNKCJĘ??
-
-
 export function durationToMilliseconds(duration) {
     // Convert duration to miliseconds 
     // Split the duration into hours, minutes, and seconds
@@ -45,4 +40,63 @@ export function durationToMilliseconds(duration) {
 
     // Sum all the milliseconds
     return hoursToMilliseconds + minutesToMilliseconds + secondsToMilliseconds;
-}
+};
+
+export async function responseFunction(url) {
+    const token = sessionStorage.getItem('token')
+    const response = await fetch(`http://127.0.0.1:8000/${url}/`, {
+        mode: 'cors',
+        credentials: "same-origin",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`
+        }
+    })
+    return response
+};
+
+export async function updateFunction(url, id, body) {
+    const token = sessionStorage.getItem('token');
+    body['user'] = token;
+    const response = await fetch(`http://127.0.0.1:8000/${url}/${id}/`, {
+        mode: 'cors',
+        credentials: 'same-origin',
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`
+        },
+        body: JSON.stringify(body)
+    })
+    return response
+};
+
+export async function createFunction(url, body) {
+    const token = sessionStorage.getItem('token');
+    body['user'] = token;
+    const response = await fetch(`http://127.0.0.1:8000/${url}/`, {
+        mode: 'cors',
+        credentials: 'same-origin',
+        method: 'POST',
+        headers: {                    
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`                
+            },
+        body: JSON.stringify(body)
+    })
+    return response
+};
+
+export async function deleteFunction(url, id) {
+    const token = sessionStorage.getItem('token');
+    const response = await fetch(`http://127.0.0.1:8000/${url}/${id}/`, {
+        mode: 'cors',
+        credentials: "same-origin",
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`
+        }
+    })
+    return response
+};

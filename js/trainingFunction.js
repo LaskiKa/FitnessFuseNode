@@ -218,7 +218,12 @@ export function trainingFunction(row) {
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getTraining();
+
+                    createChartwithApiData('training', 'line', 'Training hours', 
+                                            {type: 'time',
+                                                time: {unit: 'day'}
+                                            },
+                                            ['training_time', 2], ['', 3]);
 
                     // Delete succes bar
                     setTimeout( () => {
@@ -339,7 +344,13 @@ export function trainingFunction(row) {
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getTraining();
+
+                    createChartwithApiData('training', 'line', 'Training hours', 
+                                            {type: 'time',
+                                                time: {unit: 'day'}
+                                            },
+                                            ['training_time', 2], ['', 3]);
+                                            
                     document.querySelector('.form').reset();
 
                     // Delete succes bar
@@ -473,7 +484,12 @@ export function trainingFunction(row) {
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getTraining();
+                    
+                    createChartwithApiData('training', 'line', 'Training hours', 
+                                            {type: 'time',
+                                                time: {unit: 'day'}
+                                            },
+                                            ['training_time', 2], ['', 3]);
 
                     // Remove removed option
                     const toremove = document.querySelector('select');

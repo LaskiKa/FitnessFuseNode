@@ -1,6 +1,6 @@
 import { today, baseModal } from './views';
 import { createChartwithApiData, chartModalFunction } from './chartFunction';
-
+import { responseFunction } from './tools';
 
 export function  weightFunction(row) {
 
@@ -72,25 +72,17 @@ export function  weightFunction(row) {
 
         // SELECT - append new option with data
         const apiweightdata = async () => {
-            const token = sessionStorage.getItem('token')
-            const response = await fetch('http://127.0.0.1:8000/weight/', {
-                mode: 'cors',
-                credentials: "same-origin",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                }
-            })
+
+            const response = await responseFunction('weight');
     
             // Response verification
             if (response.ok) {
-                const weightdata = await response.json()
-                const sortedweightdata = weightdata.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
+                const weightData = await response.json()
+                const sortedWeightData = weightData.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
                 
                 // Append select with meseaurment data
 
-                const selectelement = document.querySelector('#selectdata')
-                sortedweightdata.forEach(element => {
+                sortedWeightData.forEach(element => {
                     const option = document.createElement('option');
                     const datetime = new Date (element.measurement_date)
                     const date = datetime.toISOString().split('T')[0];
@@ -169,7 +161,11 @@ export function  weightFunction(row) {
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getWeight();
+                    createChartwithApiData('weight', 'line', 'Weight by date', 
+                                            {type: 'time',
+                                            time: {unit: 'day'}
+                                            },
+                                            ['weight', 1], ['', 3])
 
                     // Delete succes bar
                     setTimeout( () => {
@@ -276,7 +272,11 @@ export function  weightFunction(row) {
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getWeight();
+                    createChartwithApiData('weight', 'line', 'Weight by date', 
+                                            {type: 'time',
+                                            time: {unit: 'day'}
+                                            },
+                                            ['weight', 1], ['', 3])
                     document.querySelector('.form').reset();
 
                     // Delete succes bar
@@ -410,7 +410,11 @@ export function  weightFunction(row) {
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
                     }
-                    getWeight();
+                    createChartwithApiData('weight', 'line', 'Weight by date', 
+                                            {type: 'time',
+                                            time: {unit: 'day'}
+                                            },
+                                            ['weight', 1], ['', 3])
                     // Remove removed option
                     const toremove = document.querySelector('select');
                     toremove.remove(toremove.selectedIndex);

@@ -72,7 +72,7 @@ export function caloriesFunction(row) {
         });
 
         // SELECT - append new option with data
-        const apicaloriesdata = async () => {
+        const apiCaloriesData = async () => {
             const response = await responseFunction('caloriesburned');
     
             // Response verification
@@ -101,8 +101,7 @@ export function caloriesFunction(row) {
             }
         };
         
-        apicaloriesdata()
-
+        apiCaloriesData()
 
         formModal.appendChild(createForm);
         manageContent.appendChild(formModal);
@@ -218,7 +217,7 @@ export function caloriesFunction(row) {
             const token = sessionStorage.getItem('token')
             
             // POST - Add calories api
-            const apiaddcalories = async () => {
+            const apiAddCalories = async () => {
 
                 const body = {
                     'kcal': formData.get('kcal'),
@@ -259,20 +258,16 @@ export function caloriesFunction(row) {
                 } else {
                     const error = response.json()
                     console.log('Error: ', error );
-                }
-
-            }
-            apiaddcalories();
-
-        })
-
+                };
+            };
+            apiAddCalories();
+        });
     });
 
     // CALORIES MANAGE: DELETE
     const deleteData = document.createElement('div');
     deleteData.classList.add('manage', 'deletedata');
     deleteData.textContent='delete';
-
     deleteData.addEventListener('click', () => {
 
         const manageContent = document.createElement('div');
@@ -293,7 +288,7 @@ export function caloriesFunction(row) {
         `
 
         // SELECT - append new option with data
-        const apicaloriesdata = async () => {    
+        const apiCaloriesData = async () => {    
             const response = await responseFunction('caloriesburned');
 
             // Response verification
@@ -302,7 +297,6 @@ export function caloriesFunction(row) {
                 const sortedCaloriesData = caloriesData.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
                 
                 // Append select with meseaurment data
-
                 sortedCaloriesData.forEach(element => {
                     const option = document.createElement('option');
                     const dateTime = new Date (element.measurement_date)
@@ -312,23 +306,16 @@ export function caloriesFunction(row) {
                     option.textContent = `${date} ${time} - calories: ${element.kcal}`;
                     option.value = element.id;
                     createForm.querySelector('select').appendChild(option);
-
                 });
-
-    
             } else {
                 // Error
                 const error = await response.json();
                 console.log('Error: ', error);
-            }
+            };
         };
-        
-        apicaloriesdata()
-
-
+        apiCaloriesData()
         formModal.appendChild(createForm);
         manageContent.appendChild(formModal);
-
 
         if (!document.querySelector('.managecontent.deletedata')) {
             // If the .managecontent.deletedata not exist -> show the managecontetn delete modal
@@ -376,13 +363,10 @@ export function caloriesFunction(row) {
                     setTimeout( () => {
                         document.querySelector('.infomodal').remove();
                     }, 3000); 
-                }
-
-            }
-            deleteData()
-        })
-
-
+                };
+            };
+            deleteData();
+        });
     }); 
 
     // Append UPDATE CREATE DELETE
@@ -396,7 +380,6 @@ export function caloriesFunction(row) {
 
     // Get calories data after pressing calories navbtn
     document.querySelector('.navbtn.calories').addEventListener('click', () => {
-        // getCalories();
         // y begin at 0! true
         createChartwithApiData('caloriesburned', 'line', 'Burned calories by date', 
                                 {type: 'time',
@@ -406,6 +389,5 @@ export function caloriesFunction(row) {
     })
 
     modalArray.push(caloriesModal, chartModal);
-    
     return modalArray
 };

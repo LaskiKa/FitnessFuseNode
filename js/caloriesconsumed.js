@@ -1,7 +1,7 @@
 // Views: Calories Consumed
-import  Chart, { LineElement }  from 'chart.js/auto';
 import { today, baseModal } from './views';
 import { createChartwithApiData, chartModalFunction } from './chartFunction';
+import { createFunction, deleteFunction, responseFunction, updateFunction } from './tools';
 
 
 export function caloriesConsumedFunction(row) {
@@ -70,16 +70,8 @@ export function caloriesConsumedFunction(row) {
             var selectedOption = seleted.options[seleted.selectedIndex];
 
             const getMealData = async (mealId) => {
-                // get meal details: calories, protein, carbs, fat, etc.
-                const token = sessionStorage.getItem('token')
-                const response = await fetch(`http://127.0.0.1:8000/calorieseaten/${mealId}/`, {
-                    mode: 'cors',
-                    credentials: "same-origin",
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Token ${token}`
-                    }
-                })
+                // Get meal details: calories, protein, carbs, fat, etc.
+                const response = await responseFunction(`calorieseaten/${mealId}`);
 
                 // Response verification
                 if (response.ok) {
@@ -103,8 +95,6 @@ export function caloriesConsumedFunction(row) {
                     dateInput.value = mealData.measurement_date.split('T')[0];
                     tiemInput.value = mealData.measurement_date.split('T')[1].split('Z')[0];
 
-
-
                 } else {
                     // Error
                     const error = await response.json();
@@ -118,15 +108,7 @@ export function caloriesConsumedFunction(row) {
 
         // SELECT - append new option with data
         const apiCaloriesData = async () => {
-            const token = sessionStorage.getItem('token')
-            const response = await fetch('http://127.0.0.1:8000/calorieseaten/', {
-                mode: 'cors',
-                credentials: "same-origin",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                }
-            })
+            const response = await responseFunction('calorieseaten')
     
             // Response verification
             if (response.ok) {
@@ -147,17 +129,14 @@ export function caloriesConsumedFunction(row) {
                     createForm.querySelector('select').appendChild(option);
 
                 });
-
-    
+ 
             } else {
                 // Error
                 const error = await response.json();
                 console.log('Error: ', error);
-            }
-        };
-        
+            };
+        };  
         apiCaloriesData()
-
 
         formModal.appendChild(createForm);
         manageContent.appendChild(formModal);
@@ -175,50 +154,39 @@ export function caloriesConsumedFunction(row) {
             event.preventDefault();
 
             const formData = new FormData(event.target)
-            const meseaurmentid = parseInt(document.querySelector('select').value)
+            const meseaurmentId = parseInt(document.querySelector('select').value)
             const newDate = `${formData.get('measurement_date')}T${formData.get('measurement_time')}`
             const token = sessionStorage.getItem('token');
 
             // PUT - update calories
             const updateCaloriesData = async() => {
-                const response = await fetch(`http://127.0.0.1:8000/calorieseaten/${meseaurmentid}/`, {
-                    mode: 'cors',
-                    credentials: 'same-origin',
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Token ${token}`
-                    },
-                    body: JSON.stringify({
-                        'user': token,
-                        'kcal': formData.get('kcal'),
-                        'meal': formData.get('meal'),
-                        'protein': formData.get('protein'),
-                        'carbs': formData.get('carbs'),
-                        'fat': formData.get('fat'),
-                        'measurement_date': newDate
-                    })
-                })
+                const body = {
+                    'user': token,
+                    'kcal': formData.get('kcal'),
+                    'meal': formData.get('meal'),
+                    'protein': formData.get('protein'),
+                    'carbs': formData.get('carbs'),
+                    'fat': formData.get('fat'),
+                    'measurement_date': newDate
+                };
+
+                const response = await updateFunction('calorieseaten', meseaurmentId, body);
 
                 if (response.ok) {
-                    const data = response.json();
-
                     const infoModal = document.createElement('div');
                     infoModal.classList.add('infomodal', 'success');
 
                     const infocontent = document.createElement('div');
                     infocontent.classList.add('infocontent');
                     infocontent.textContent = 'Updated!';
-
                     infoModal.append(infocontent);
-                    
                     document.querySelector('.managemodal').parentElement.append(infoModal)
 
                     // UPDATE CHART
                     // Destroy chart if exist
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
-                    }
+                    };
                     createChartwithApiData('calorieseaten', 'line', 'Consumed calories by date',
                                             {type: 'category'}, 
                                             ['kcal', 1], 
@@ -228,13 +196,10 @@ export function caloriesConsumedFunction(row) {
                     setTimeout( () => {
                         document.querySelector('.infomodal').remove();
                     }, 3000);
-                }
-            }
+                };
+            };
             updateCaloriesData();
-
-
         });
-
     });
 
     // CALORIES MANAGE: CREATE
@@ -279,10 +244,8 @@ export function caloriesConsumedFunction(row) {
         createForm.querySelector('#measurement_date').value = now[0];
         createForm.querySelector('#measurement_time').value = now[1];
         
-
         formModal.appendChild(createForm);
         manageContent.appendChild(formModal);
-        
 
         if (!document.querySelector('.managecontent.create')) {
             // If the .managecontent.update not exist -> show the managecontetn update modal
@@ -304,46 +267,32 @@ export function caloriesConsumedFunction(row) {
 
             // POST - Add calories api
             const apiAddcalories = async () => {
-                const response = await fetch('http://127.0.0.1:8000/calorieseaten/', {
-                    mode: 'cors',
-                    credentials: 'same-origin',
-                    method: 'POST',
-                    headers: {                    
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`                
-                    },
-                    body: JSON.stringify({
-                        'user': token,
-                        'kcal': formData.get('kcal'),
-                        'meal': formData.get('meal'),
-                        'protein': formData.get('protein'),
-                        'carbs': formData.get('carbs'),
-                        'fat': formData.get('fat'),
-                        'measurement_date': toDataTime
+                const body = {
+                    'user': token,
+                    'kcal': formData.get('kcal'),
+                    'meal': formData.get('meal'),
+                    'protein': formData.get('protein'),
+                    'carbs': formData.get('carbs'),
+                    'fat': formData.get('fat'),
+                    'measurement_date': toDataTime
+                };
+                const response = await createFunction('calorieseaten', body);
     
-                    })
-                })
-    
-    
-                if (response.ok) {
-                    const data = response.json()
-                    
+                if (response.ok) {                    
                     const infoModal = document.createElement('div');
                     infoModal.classList.add('infomodal', 'success');
 
                     const infoContent = document.createElement('div');
                     infoContent.classList.add('infocontent');
                     infoContent.textContent = 'Success';
-
                     infoModal.append(infoContent);
-                    
-                    document.querySelector('.managemodal').parentElement.append(infoModal)
+                    document.querySelector('.managemodal').parentElement.append(infoModal);
 
                     // UPDATE CHART
                     // Destroy chart if exist
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
-                    }
+                    };
 
                     createChartwithApiData('calorieseaten', 'line', 'Consumed calories by date',
                                             {type: 'category'}, 
@@ -359,13 +308,10 @@ export function caloriesConsumedFunction(row) {
                 } else {
                     const error = response.json()
                     console.log('Error: ', error );
-                }
-
-            }
+                };
+            };
             apiAddcalories();
-
-        })
-
+        });
     });
 
     // CALORIES MANAGE: DELETE
@@ -394,51 +340,33 @@ export function caloriesConsumedFunction(row) {
 
         // SELECT - append new option with data
         const apiCaloriesData = async () => {
-            const token = sessionStorage.getItem('token')
-            const response = await fetch('http://127.0.0.1:8000/calorieseaten/', {
-                mode: 'cors',
-                credentials: "same-origin",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                }
-            })
-    
+            const response = await responseFunction('calorieseaten');
             // Response verification
             if (response.ok) {
-                const caloriesData = await response.json()
+                const caloriesData = await response.json();
                 const sortedCaloriesData = caloriesData.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
                 
                 // Append select with meseaurment data
-
-                const selectElement = document.querySelector('#selectdata')
-
                 sortedCaloriesData.forEach(element => {
                     const option = document.createElement('option');
-                    const dateTime = new Date (element.measurement_date)
+                    const dateTime = new Date (element.measurement_date);
                     const date = dateTime.toISOString().split('T')[0];
                     const time = dateTime.toISOString().split('T')[1].split('.')[0]
 
                     option.textContent = `${date} ${time} - meal: ${element.meal} - calories: ${element.kcal}`;
                     option.value = element.id;
                     document.querySelector('select').appendChild(option);
-
                 });
-
-    
             } else {
                 // Error
                 const error = await response.json();
                 console.log('Error: ', error);
-            }
-        };
-        
-        apiCaloriesData()
-
+            };
+        };    
+        apiCaloriesData();
 
         formModal.appendChild(createForm);
         manageContent.appendChild(formModal);
-
 
         if (!document.querySelector('.managecontent.deletedata')) {
             // If the .managecontent.deletedata not exist -> show the managecontetn delete modal
@@ -452,30 +380,17 @@ export function caloriesConsumedFunction(row) {
         document.querySelector('form').addEventListener('submit', (element)=> {
             element.preventDefault()
             const deleteData = async () => {
-                const token = sessionStorage.getItem('token');
                 const id = document.querySelector('select').value
-                const response = await fetch(`http://127.0.0.1:8000/calorieseaten/${id}/`, {
-                    mode: 'cors',
-                    credentials: "same-origin",
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Token ${token}`
-                    }
-                })
-
+                const response = await deleteFunction(`calorieseaten`, id);
                 if (response.ok) {
 
-                    const infomodal = document.createElement('div');
-                    infomodal.classList.add('infomodal', 'success');
-
-                    const infocontent = document.createElement('div');
-                    infocontent.classList.add('infocontent');
-                    infocontent.textContent = 'Deleted!';
-
-                    infomodal.append(infocontent);
-                    
-                    document.querySelector('.managemodal').parentElement.append(infomodal)
+                    const infoModal = document.createElement('div');
+                    infoModal.classList.add('infomodal', 'success');
+                    const infoContent = document.createElement('div');
+                    infoContent.classList.add('infocontent');
+                    infoContent.textContent = 'Deleted!';
+                    infoModal.append(infoContent);
+                    document.querySelector('.managemodal').parentElement.append(infoModal)
 
                     // UPDATE CHART
                     // Destroy chart if exist
@@ -487,22 +402,17 @@ export function caloriesConsumedFunction(row) {
                                             ['kcal', 1], 
                                             ['meal', 1]);
                     // Remove removed option
-                    const toremove = document.querySelector('select');
-                    toremove.remove(toremove.selectedIndex);
-
-                    
+                    const toRemove = document.querySelector('select');
+                    toRemove.remove(toRemove.selectedIndex);
 
                     // Delete succes bar
                     setTimeout( () => {
                         document.querySelector('.infomodal').remove();
                     }, 3000); 
-                }
-
-            }
-            deleteData()
-        })
-
-
+                };
+            };
+            deleteData();
+        });
     }); 
 
     // Append UPDATE CREATE DELETE
@@ -513,7 +423,6 @@ export function caloriesConsumedFunction(row) {
 
     // CHART
     const chartModal = chartModalFunction();
-
     document.querySelector('.navbtn.caloriesconsumed').addEventListener('click', () => {
         createChartwithApiData('calorieseaten', 'line', 'Consumed calories by date',
                                 {type: 'category'}, 

@@ -140,3 +140,41 @@ export const navBoxTemplate = `
         <div class="navbtn contact">Contact</div>
     </nav>
 `
+
+export const stepsUpdateFormTemplate = `
+        <label>Select data: </label>
+        <select id='selectdata'>
+        </select>
+
+        <label>Steps:</label>
+        <input type="number" id="steps" name="steps" required>
+
+        <label>Measurement date:</label>
+        <input type="date" id="measurement_date" name="measurement_date" required>
+
+        <label>Measurement time:</label>
+        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
+        
+        <button type="submit" id="submit">Update</button>
+`
+
+export const stepsCreateFormTemplate = `
+        <label>Steps:</label>
+        <input type="number" id="steps" name="steps" required>
+
+        <label>Measurement date:</label>
+        <input type="date" id="measurement_date" name="measurement_date" required>
+
+        <label>Measurement time:</label>
+        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
+        
+        <button type="submit" id="submit">Submit</button>
+`
+
+export const stepsDeleteFormTemplate = `
+        <label>Select data: </label>
+        <select id='selectdata'>
+        </select>
+
+        <button type="submit" id="delete">Delete</button>
+`

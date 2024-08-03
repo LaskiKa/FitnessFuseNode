@@ -2,6 +2,7 @@
 import { today, baseModal } from './views';
 import { createChartwithApiData, chartModalFunction } from './chartFunction';
 import { createFunction, deleteFunction, responseFunction, updateFunction } from './tools';
+import { stepsCreateFormTemplate, stepsDeleteFormTemplate, stepsUpdateFormTemplate } from './htmlTemplates';
 
 export function stepsFunction(row) {
 
@@ -32,23 +33,7 @@ export function stepsFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'update');
-        createForm.innerHTML = `
-        <label>Select data: </label>
-        <select id='selectdata'>
-        </select>
-
-        <label>Steps:</label>
-        <input type="number" id="steps" name="steps" required>
-
-        <label>Measurement date:</label>
-        <input type="date" id="measurement_date" name="measurement_date" required>
-
-        <label>Measurement time:</label>
-        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
-        
-        <button type="submit" id="submit">Update</button>
-
-        `
+        createForm.innerHTML = stepsUpdateFormTemplate;
 
         // Event listener - after selecting data to update fill other fields in form
         createForm.querySelector('select').addEventListener('click', () => {
@@ -139,7 +124,6 @@ export function stepsFunction(row) {
                     const infoContent = document.createElement('div');
                     infoContent.classList.add('infocontent');
                     infoContent.textContent = 'Updated!';
-
                     infoModal.append(infoContent);
                     
                     document.querySelector('.managemodal').parentElement.append(infoModal)
@@ -178,22 +162,9 @@ export function stepsFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'create');
-        createForm.innerHTML = `
-        <label>Steps:</label>
-        <input type="number" id="steps" name="steps" required>
-
-        <label>Measurement date:</label>
-        <input type="date" id="measurement_date" name="measurement_date" required>
-
-        <label>Measurement time:</label>
-        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
-        
-        <button type="submit" id="submit">Submit</button>
-
-        `
+        createForm.innerHTML = stepsCreateFormTemplate;
         createForm.querySelector('#measurement_date').value = now[0];
         createForm.querySelector('#measurement_time').value = now[1];
-        
 
         formModal.appendChild(createForm);
         manageContent.appendChild(formModal);
@@ -279,14 +250,7 @@ export function stepsFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'update');
-        createForm.innerHTML = `
-        <label>Select data: </label>
-        <select id='selectdata'>
-        </select>
-
-        <button type="submit" id="delete">Delete</button>
-
-        `
+        createForm.innerHTML = stepsDeleteFormTemplate;
 
         // SELECT - append new option with data
         const apiStepsData = async () => {
@@ -341,7 +305,6 @@ export function stepsFunction(row) {
                     const infoContent = document.createElement('div');
                     infoContent.classList.add('infocontent');
                     infoContent.textContent = 'Deleted!';
-
                     infoModal.append(infoContent);
                     
                     document.querySelector('.managemodal').parentElement.append(infoModal);

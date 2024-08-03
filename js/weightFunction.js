@@ -1,6 +1,7 @@
 import { today, baseModal } from './views';
 import { createChartwithApiData, chartModalFunction } from './chartFunction';
 import { createFunction, deleteFunction, responseFunction, updateFunction } from './tools';
+import { weightCreateFormTemplate, weightDeleteFormTemplate, weightUpdateFormTemplate } from './htmlTemplates';
 
 export function  weightFunction(row) {
 
@@ -31,23 +32,7 @@ export function  weightFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'update');
-        createForm.innerHTML = `
-        <label>Select data: </label>
-        <select id='selectdata'>
-        </select>
-
-        <label>Weight:</label>
-        <input type="number" step=".01" id="weight" name="weight" required>
-
-        <label>Measurement date:</label>
-        <input type="date" id="measurement_date" name="measurement_date" required>
-
-        <label>Measurement time:</label>
-        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
-        
-        <button type="submit" id="submit">Update</button>
-
-        `
+        createForm.innerHTML = weightUpdateFormTemplate;
 
         // Event listener - after selecting data to update fill other fields in form
         createForm.querySelector('select').addEventListener('click', () => {
@@ -79,7 +64,6 @@ export function  weightFunction(row) {
                 const sortedWeightData = weightData.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
                 
                 // Append select with meseaurment data
-
                 sortedWeightData.forEach(element => {
                     const option = document.createElement('option');
                     const dateTime = new Date (element.measurement_date)
@@ -97,9 +81,7 @@ export function  weightFunction(row) {
                 console.log('Error: ', error);
             }
         };
-        
         apiWeightData()
-
 
         formModal.appendChild(createForm);
         manageContent.appendChild(formModal);
@@ -137,7 +119,6 @@ export function  weightFunction(row) {
                     const infoContent = document.createElement('div');
                     infoContent.classList.add('infocontent');
                     infoContent.textContent = 'Updated!';
-
                     infoModal.append(infoContent);
                     
                     document.querySelector('.managemodal').parentElement.append(infoModal);
@@ -177,19 +158,7 @@ export function  weightFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'create');
-        createForm.innerHTML = `
-        <label>Weight:</label>
-        <input type="number" step=".01" id="weight" name="weight" required>
-
-        <label>Measurement date:</label>
-        <input type="date" id="measurement_date" name="measurement_date" required>
-
-        <label>Measurement time:</label>
-        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
-        
-        <button type="submit" id="submit">Submit</button>
-
-        `
+        createForm.innerHTML = weightCreateFormTemplate;
         createForm.querySelector('#measurement_date').value = now[0];
         createForm.querySelector('#measurement_time').value = now[1];
         
@@ -273,14 +242,7 @@ export function  weightFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'update');
-        createForm.innerHTML = `
-        <label>Select data: </label>
-        <select id='selectdata'>
-        </select>
-
-        <button type="submit" id="delete">Delete</button>
-
-        `
+        createForm.innerHTML = weightDeleteFormTemplate;
 
         // SELECT - append new option with data
         const apiWeightData = async () => {

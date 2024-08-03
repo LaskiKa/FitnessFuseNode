@@ -233,3 +233,41 @@ export const trainingDeleteFormTemplate = `
 
         <button type="submit" id="delete">Delete</button>
 `
+
+export const weightUpdateFormTemplate = `
+        <label>Select data: </label>
+        <select id='selectdata'>
+        </select>
+
+        <label>Weight:</label>
+        <input type="number" step=".01" id="weight" name="weight" required>
+
+        <label>Measurement date:</label>
+        <input type="date" id="measurement_date" name="measurement_date" required>
+
+        <label>Measurement time:</label>
+        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
+        
+        <button type="submit" id="submit">Update</button>
+`
+
+export const weightCreateFormTemplate = `
+        <label>Weight:</label>
+        <input type="number" step=".01" id="weight" name="weight" required>
+
+        <label>Measurement date:</label>
+        <input type="date" id="measurement_date" name="measurement_date" required>
+
+        <label>Measurement time:</label>
+        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
+        
+        <button type="submit" id="submit">Submit</button>
+`
+
+export const weightDeleteFormTemplate = `
+        <label>Select data: </label>
+        <select id='selectdata'>
+        </select>
+
+        <button type="submit" id="delete">Delete</button>
+`

@@ -1,6 +1,7 @@
 // Handling Loging, Register, Logout
 import { removeRows } from "./views";
 import { authenticationFunction } from './tools';
+import { loginFormTemplate, registerFormTemplate } from "./htmlTemplates";
 
 export function loginFunction() {
     // Create login form and front login logic
@@ -14,22 +15,10 @@ export function loginFunction() {
         // If modalbox exist, don't create new modlabox
         if (!document.querySelector('.modalbox.login')) {
 
-            const loginForm = document.createElement('div')
-            loginForm.classList.add('modalbox', 'login')
-            loginForm.innerHTML = `
-            <span class="close">&times;</span>
-            <form class="login-form" method="post">
+            const loginForm = document.createElement('div');
+            loginForm.classList.add('modalbox', 'login');
+            loginForm.innerHTML = loginFormTemplate;
 
-                <label>Username:</label>
-                <input type="text" id="username" required>
-
-                <label>Password:</label>
-                <input type="password" id="password" name="password" required>
-                
-                <input type="button" value="Login">
-
-            </form>
-            `
                 //  Send form
             loginForm.querySelector('input[value="Login"]').addEventListener('click', ()=>{
 
@@ -111,24 +100,7 @@ export function registerFunction() {
 
             const registerForm = document.createElement('div');
             registerForm.classList.add('modalbox', 'register');
-            registerForm.innerHTML = `
-            <span class="close">&times;</span>
-            <form class="register-form" method="post">
-
-                <label>Username:</label>
-                <input type="text" id="username" required>
-
-                <label>Email address:</label>
-                <input type="text" id="email" required>
-
-                <label>Password:</label>
-                <input type="password" id="password" name="password" required>
-                
-                <input type="button" value="Register">
-
-            </form>
-            
-            `
+            registerForm.innerHTML = registerFormTemplate;
                 //  Send form
             registerForm.querySelector('input[value="Register"]').addEventListener('click', () => {
 

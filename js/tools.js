@@ -100,3 +100,18 @@ export async function deleteFunction(url, id) {
     })
     return response
 };
+
+export async function authenticationFunction(url, body) {
+    const token = sessionStorage.getItem('token');
+    const response = await fetch(`http://127.0.0.1:8000/${url}/`, {
+        mode: 'cors',
+        credentials: 'same-origin',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`
+        },
+        body: JSON.stringify(body)   
+    })
+    return response
+};

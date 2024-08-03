@@ -1,23 +1,22 @@
 // Handling Loging, Register, Logout
-
-import { baseModal } from "./views";
 import { removeRows } from "./views";
+import { authenticationFunction } from './tools';
 
 export function loginFunction() {
     // Create login form and front login logic
     
     // LOGIN
     // Set Login Logic
-    const loginbtn = document.querySelector('.navbtn.login');
+    const loginBtn = document.querySelector('.navbtn.login');
     // LOGIN FORM
 
-    loginbtn.addEventListener('click', () => {
+    loginBtn.addEventListener('click', () => {
         // If modalbox exist, don't create new modlabox
         if (!document.querySelector('.modalbox.login')) {
 
-            const loginform = document.createElement('div')
-            loginform.classList.add('modalbox', 'login')
-            loginform.innerHTML = `
+            const loginForm = document.createElement('div')
+            loginForm.classList.add('modalbox', 'login')
+            loginForm.innerHTML = `
             <span class="close">&times;</span>
             <form class="login-form" method="post">
 
@@ -31,24 +30,15 @@ export function loginFunction() {
 
             </form>
             `
-
-            
                 //  Send form
-            loginform.querySelector('input[value="Login"]').addEventListener('click', ()=>{
+            loginForm.querySelector('input[value="Login"]').addEventListener('click', ()=>{
 
-                const apilogin = async () => {
-                    const response = await fetch('http://127.0.0.1:8000/login/', {
-                        mode: 'cors',
-                        credentials: 'same-origin',
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            'username': loginform.querySelector('#username').value,
-                            'password': loginform.querySelector('#password').value
-                        })
-                    })
+                const apiLogin = async () => {
+                    const body = {
+                        'username': loginForm.querySelector('#username').value,
+                        'password': loginForm.querySelector('#password').value
+                    }
+                    const response = await authenticationFunction('login', body)
 
                     // Response verification
                     if (response.ok) {
@@ -73,44 +63,35 @@ export function loginFunction() {
                         const error = await response.json();
 
                             // Create message box
-                        const messagebox = document.createElement('div');
-                        messagebox.classList.add('messagebox');
+                        const messageBox = document.createElement('div');
+                        messageBox.classList.add('messagebox');
 
                             // Create message content
-                        const errormessage = document.createElement('div');
-                        errormessage.textContent = error.error;
-                        errormessage.classList.add('error', 'login');
+                        const errorMessage = document.createElement('div');
+                        errorMessage.textContent = error.error;
+                        errorMessage.classList.add('error', 'login');
 
-
-                        messagebox.appendChild(errormessage);
+                        messageBox.appendChild(errorMessage);
                         
-
                         // If error message NOT exist - show err message
                         if (!document.querySelector('.error.login')) {
-                            // document.querySelector('.modalbox.login').appendChild(messagediv);
-                            document.querySelector('.login-form').appendChild(messagebox);
+                            document.querySelector('.login-form').appendChild(messageBox);
                         };
                     };
-            };
-
-        apilogin();   
-
-        });
-
+                };
+                apiLogin();
+            });
 
             // Close form logic
-        loginform.querySelector('.close').style.cursor='pointer'    
-        loginform.querySelector('.close').onclick = () => {
-            loginform.remove()
-        };
-
+            loginForm.querySelector('.close').style.cursor='pointer'    
+            loginForm.querySelector('.close').onclick = () => {
+                loginForm.remove()
+            };
         // Remove rows
         removeRows();
-
         // Add login form to container
-        document.querySelector('.container').appendChild(loginform);
+        document.querySelector('.container').appendChild(loginForm);
         };
-
     });
 };
 
@@ -119,18 +100,18 @@ export function registerFunction() {
     
     // REGISTER
     // Set Register Logic    
-    const registernbtn = document.querySelector('.navbtn.register');
-    const loginbtn = document.querySelector('.navbtn.login');
+    const registernBtn = document.querySelector('.navbtn.register');
+    const loginBtn = document.querySelector('.navbtn.login');
 
     // REGISTER FORM
 
-    registernbtn.addEventListener('click', () => {
+    registernBtn.addEventListener('click', () => {
         // If modalbox exist, don't create new modlabox
         if (!document.querySelector('modalbox.register')) {
 
-            const registerform = document.createElement('div');
-            registerform.classList.add('modalbox', 'register');
-            registerform.innerHTML = `
+            const registerForm = document.createElement('div');
+            registerForm.classList.add('modalbox', 'register');
+            registerForm.innerHTML = `
             <span class="close">&times;</span>
             <form class="register-form" method="post">
 
@@ -149,23 +130,15 @@ export function registerFunction() {
             
             `
                 //  Send form
+            registerForm.querySelector('input[value="Register"]').addEventListener('click', () => {
 
-            registerform.querySelector('input[value="Register"]').addEventListener('click', () => {
-
-                const apiregister = async () => {
-                    const response = await fetch('http://127.0.0.1:8000/register/', {
-                        mode: 'cors',
-                        credentials: 'same-origin',
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            'username': registerform.querySelector('#username').value,
-                            'email': registerform.querySelector('#email').value,
-                            'password': registerform.querySelector('#password').value,
-                        })
-                    })
+                const apiRegister = async () => {
+                    const body = {
+                        'username': registerForm.querySelector('#username').value,
+                        'email': registerForm.querySelector('#email').value,
+                        'password': registerForm.querySelector('#password').value,
+                    };
+                    const response = await authenticationFunction('register', body);
 
                     // Response verification
                     if (response.ok) {
@@ -174,22 +147,21 @@ export function registerFunction() {
                         const message = await response.json();
                         
                         // Create message box
-                        const messagebox = document.createElement('div');
-                        messagebox.classList.add('messagebox');                        
+                        const messageBox = document.createElement('div');
+                        messageBox.classList.add('messagebox');                        
                         
                         // Create message content
-                        const contentmessage = document.createElement('div');
-                        contentmessage.textContent = `${message.message}. Try to login`;
-                        contentmessage.classList.add('message', 'content');
+                        const contentMessage = document.createElement('div');
+                        contentMessage.textContent = `${message.message}. Try to login`;
+                        contentMessage.classList.add('message', 'content');
 
-                        messagebox.appendChild(contentmessage);
+                        messageBox.appendChild(contentMessage);
 
                         if (document.querySelector('.messagebox')) {
                             document.querySelector('.messagebox').remove();
                         };
 
-                        document.querySelector('.modalbox.register').appendChild(messagebox);
-                        
+                        document.querySelector('.modalbox.register').appendChild(messageBox);
 
                     } else {
 
@@ -200,73 +172,58 @@ export function registerFunction() {
                             // Create message box
                             // If messagebox don't exist create messagebox
                         
-                        const messagebox = document.createElement('div');
-                        messagebox.classList.add('messagebox');
+                        const messageBox = document.createElement('div');
+                        messageBox.classList.add('messagebox');
 
                             // Create message content
-                        const errormessage = document.createElement('div');
-                        errormessage.textContent = 'Try again'
-                        errormessage.classList.add('message', 'content');
+                        const errorMessage = document.createElement('div');
+                        errorMessage.textContent = 'Try again'
+                        errorMessage.classList.add('message', 'content');
 
-                        messagebox.appendChild(errormessage);
+                        messageBox.appendChild(errorMessage);
 
                         if (document.querySelector('.messagebox')) {
                             document.querySelector('.messagebox').remove();
                         };
-                        
-                        document.querySelector('.modalbox.register').appendChild(messagebox);
-                    
-                                     
+                        document.querySelector('.modalbox.register').appendChild(messageBox);
                     };
                 };
-
-            apiregister();
-
+            apiRegister();
             });
             
             // Close form logic
-            registerform.querySelector('.close').style.cursor='pointer'    
-            registerform.querySelector('.close').onclick = () => {
+            registerForm.querySelector('.close').style.cursor='pointer'    
+            registerForm.querySelector('.close').onclick = () => {
                 // remove parent element -> registerform is contentbox child
-                registerform.parentElement.remove()
-            }
-    
+                registerForm.parentElement.remove()
+            };
 
             // remove all modals from app
             removeRows();
             // Add register form to contentbox
             // Add contentbox to container
-            const contentbox = document.createElement('div');
-            contentbox.classList.add('modalrow');
-            contentbox.appendChild(registerform)
-            document.querySelector('.container').appendChild(contentbox);            
+            const contentBox = document.createElement('div');
+            contentBox.classList.add('modalrow');
+            contentBox.appendChild(registerForm)
+            document.querySelector('.container').appendChild(contentBox);            
         };
     });
-    
 };
 
 export function logoutFunction() {
     // Create logout form and front logout logic
     // get logout btn
-    const loginbtn = document.querySelector('.navbtn.logout');
+    const loginBtn = document.querySelector('.navbtn.logout');
     
     // LOGOUT
     // Set Logout Logic      
-    loginbtn.addEventListener('click', () => {
-        const apilogout = async () => {
+    loginBtn.addEventListener('click', () => {
+        const apiLogout = async () => {
             const token = sessionStorage.getItem('token')
-            const response = await fetch('http://127.0.0.1:8000/logout/', {
-                mode: 'cors',
-                credentials: 'same-origin',
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                },
-                body: JSON.stringify({
-                    'token': sessionStorage.getItem('token')
-                })
-            })
+            const body = {
+                'token': token
+            };
+            const response = await authenticationFunction('logout', body);
 
             // Response verification
             if (response.ok) {
@@ -275,17 +232,17 @@ export function logoutFunction() {
                 sessionStorage.removeItem('token');
 
                     // Create message box
-                const messagebox = document.createElement('div');
-                messagebox.classList.add('messagebox');
+                const messageBox = document.createElement('div');
+                messageBox.classList.add('messagebox');
 
                     // Create message content
-                const contentmessage = document.createElement('div');
-                contentmessage.textContent = message.message;
-                contentmessage.classList.add('message', 'content');
+                const contentMessage = document.createElement('div');
+                contentMessage.textContent = message.message;
+                contentMessage.classList.add('message', 'content');
 
-                messagebox.appendChild(contentmessage);
+                messageBox.appendChild(contentMessage);
                 
-                document.querySelector('.container').appendChild(messagebox);
+                document.querySelector('.container').appendChild(messageBox);
                 
                 window.location.reload(true);
 
@@ -294,24 +251,19 @@ export function logoutFunction() {
                 const error = await response.json();
 
                     // Create message box
-                const messagebox = document.createElement('div');
-                messagebox.classList.add('messagebox');
+                const messageBox = document.createElement('div');
+                messageBox.classList.add('messagebox');
 
                     // Create message content
-                const errormessage = document.createElement('div');
-                errormessage.textContent = error.error;
-                errormessage.classList.add('error', 'login');
+                const errorMessage = document.createElement('div');
+                errorMessage.textContent = error.error;
+                errorMessage.classList.add('error', 'login');
 
-                messagebox.appendChild(errormessage);
+                messageBox.appendChild(errorMessage);
 
-                document.querySelector('.container').appendChild(messagebox);
-
-            }
-        }
-
-    apilogout();
-
+                document.querySelector('.container').appendChild(messageBox);
+            };
+        };
+    apiLogout();
     });
-
-
 };

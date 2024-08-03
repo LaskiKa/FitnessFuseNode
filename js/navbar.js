@@ -39,14 +39,12 @@ export function navbar () {
         logoutBtn.classList.add('navbtn', 'logout');
         logoutBtn.textContent = 'Logout';
 
-
         navbox.querySelector('nav').appendChild(weightBtn);
         navbox.querySelector('nav').appendChild(trainingBtn);
         navbox.querySelector('nav').appendChild(stapsBtn);
         navbox.querySelector('nav').appendChild(caloriseBtn);
         navbox.querySelector('nav').appendChild(caloriesConsumedBtn);
         navbox.querySelector('nav').appendChild(logoutBtn);
-
 
         return navbox
 

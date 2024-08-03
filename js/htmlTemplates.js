@@ -132,3 +132,11 @@ export const chartFilterModalTemplate = `
     <div class='filtercontent' >End: <input id='end' type="date"> </div>
     <button class='filtercontent' id='submit' >Filter</button>
 `
+
+export const navBoxTemplate = `
+    <nav>
+        <div class="navbtn home">Home</div>
+        <div class="navbtn about">About</div>
+        <div class="navbtn contact">Contact</div>
+    </nav>
+`

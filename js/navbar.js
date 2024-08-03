@@ -1,16 +1,12 @@
 // Create navbar
 
-export function navbar () {
-    const navbox = document.createElement('div');
-    navbox.innerHTML = `
-    <nav>
-        <div class="navbtn home">Home</div>
-        <div class="navbtn about">About</div>
-        <div class="navbtn contact">Contact</div>
-    </nav>
-    `;
+import { navBoxTemplate } from "./htmlTemplates";
 
-    navbox.classList.add('navbox')
+export function navbar () {
+    const navBox = document.createElement('div');
+    navBox.innerHTML = navBoxTemplate;
+
+    navBox.classList.add('navbox')
 
 
     // If tokken exist
@@ -39,14 +35,14 @@ export function navbar () {
         logoutBtn.classList.add('navbtn', 'logout');
         logoutBtn.textContent = 'Logout';
 
-        navbox.querySelector('nav').appendChild(weightBtn);
-        navbox.querySelector('nav').appendChild(trainingBtn);
-        navbox.querySelector('nav').appendChild(stapsBtn);
-        navbox.querySelector('nav').appendChild(caloriseBtn);
-        navbox.querySelector('nav').appendChild(caloriesConsumedBtn);
-        navbox.querySelector('nav').appendChild(logoutBtn);
+        navBox.querySelector('nav').appendChild(weightBtn);
+        navBox.querySelector('nav').appendChild(trainingBtn);
+        navBox.querySelector('nav').appendChild(stapsBtn);
+        navBox.querySelector('nav').appendChild(caloriseBtn);
+        navBox.querySelector('nav').appendChild(caloriesConsumedBtn);
+        navBox.querySelector('nav').appendChild(logoutBtn);
 
-        return navbox
+        return navBox
 
     } else {
         const loginBtn = document.createElement('div');
@@ -57,8 +53,8 @@ export function navbar () {
         registerBtn.classList.add('navbtn', 'register');
         registerBtn.textContent = 'Register';
 
-        navbox.querySelector('nav').appendChild(loginBtn);
-        navbox.querySelector('nav').appendChild(registerBtn);
-        return navbox
+        navBox.querySelector('nav').appendChild(loginBtn);
+        navBox.querySelector('nav').appendChild(registerBtn);
+        return navBox
     };
 };

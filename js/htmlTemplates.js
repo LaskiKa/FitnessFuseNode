@@ -178,3 +178,58 @@ export const stepsDeleteFormTemplate = `
 
         <button type="submit" id="delete">Delete</button>
 `
+
+export const trainingUpdateFormTemplate = `
+        <label>Select session: </label>
+        <select id='selectdata'>
+        </select>
+
+        <label>Training:</label>
+        <select id='traininglist' name='training'>
+        </select>
+        <label>Traning Duration</label>
+        <div id="training_time">
+        <label>Hours:</label>
+        <input type="number" step=1 id="durationhours", name="durationhours" requred>
+        <label>Minutes:</label>
+        <input type="number" step=1 id="durationminutes", name="durationminutes" requred>
+        <label>Seconds:</label>
+        <input type="number" step=1 id="durationseconds", name="durationseconds" requred>
+        </div>
+        <label>Measurement date:</label>
+        <input type="date" id="measurement_date" name="measurement_date" required>
+
+        <label>Measurement time:</label>
+        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
+        
+        <button type="submit" id="submit">Update</button>
+`
+
+export const trainingCreateFormTemplate = `
+        <label>Training:</label>
+        <select id='traininglist' name='training'>
+        </select>
+        <label>Traning Duration</label>
+        <div id="training_time">
+        <label>Hours:</label>
+        <input type="number" step=1 id="durationhours", name="durationhours" value=0 requred>
+        <label>Minutes:</label>
+        <input type="number" step=1 id="durationminutes", name="durationminutes" value=0 requred>
+        <label>Seconds:</label>
+        <input type="number" step=1 id="durationseconds", name="durationseconds" value=0 requred>
+        </div>
+        <label>Measurement date:</label>
+        <input type="date" id="measurement_date" name="measurement_date" required>
+
+        <label>Measurement time:</label>
+        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
+        
+        <button type="submit" id="submit">Create</button>
+`
+export const trainingDeleteFormTemplate = `
+        <label>Select data: </label>
+        <select id='selectdata'>
+        </select>
+
+        <button type="submit" id="delete">Delete</button>
+`

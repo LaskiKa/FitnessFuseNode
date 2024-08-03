@@ -1,6 +1,7 @@
 import { today, baseModal } from './views';
 import { createChartwithApiData, chartModalFunction } from './chartFunction';
 import { createFunction, deleteFunction, responseFunction, updateFunction } from './tools';
+import { trainingCreateFormTemplate, trainingDeleteFormTemplate, trainingUpdateFormTemplate } from './htmlTemplates';
 
 
 export function trainingFunction(row) {
@@ -80,32 +81,7 @@ export function trainingFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'update');
-        createForm.innerHTML = `
-        <label>Select session: </label>
-        <select id='selectdata'>
-        </select>
-
-        <label>Training:</label>
-        <select id='traininglist' name='training'>
-        </select>
-        <label>Traning Duration</label>
-        <div id="training_time">
-        <label>Hours:</label>
-        <input type="number" step=1 id="durationhours", name="durationhours" requred>
-        <label>Minutes:</label>
-        <input type="number" step=1 id="durationminutes", name="durationminutes" requred>
-        <label>Seconds:</label>
-        <input type="number" step=1 id="durationseconds", name="durationseconds" requred>
-        </div>
-        <label>Measurement date:</label>
-        <input type="date" id="measurement_date" name="measurement_date" required>
-
-        <label>Measurement time:</label>
-        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
-        
-        <button type="submit" id="submit">Update</button>
-
-        `
+        createForm.innerHTML = trainingUpdateFormTemplate;
 
         // Event listener - after selecting data to update fill other fields in form
         createForm.querySelector('select').addEventListener('click', () => {
@@ -220,39 +196,15 @@ export function trainingFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'create');
-        createForm.innerHTML = `
-        <label>Training:</label>
-        <select id='traininglist' name='training'>
-        </select>
-        <label>Traning Duration</label>
-        <div id="training_time">
-        <label>Hours:</label>
-        <input type="number" step=1 id="durationhours", name="durationhours" value=0 requred>
-        <label>Minutes:</label>
-        <input type="number" step=1 id="durationminutes", name="durationminutes" value=0 requred>
-        <label>Seconds:</label>
-        <input type="number" step=1 id="durationseconds", name="durationseconds" value=0 requred>
-        </div>
-        <label>Measurement date:</label>
-        <input type="date" id="measurement_date" name="measurement_date" required>
-
-        <label>Measurement time:</label>
-        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
-        
-        <button type="submit" id="submit">Create</button>
-
-        `
+        createForm.innerHTML = trainingCreateFormTemplate;
         createForm.querySelector('#measurement_date').value = now[0];
         createForm.querySelector('#measurement_time').value = now[1];
         
-
         // Fill form with Sport avalible to choose
         getTrainingList();
         formModal.appendChild(createForm);
         manageContent.appendChild(formModal);
-
         
-
         if (!document.querySelector('.managecontent.create')) {
             // If the .managecontent.create not exist -> show the managecontetn create modal
             document.querySelectorAll('.managecontent').forEach((element) => {
@@ -286,7 +238,6 @@ export function trainingFunction(row) {
                     const infocontent = document.createElement('div');
                     infocontent.classList.add('infocontent');
                     infocontent.textContent = 'Success';
-
                     infomodal.append(infocontent);
                     
                     document.querySelector('.managemodal').parentElement.append(infomodal)
@@ -337,18 +288,10 @@ export function trainingFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'update');
-        createForm.innerHTML = `
-        <label>Select data: </label>
-        <select id='selectdata'>
-        </select>
-
-        <button type="submit" id="delete">Delete</button>
-
-        `
+        createForm.innerHTML = trainingDeleteFormTemplate;
 
         // SELECT - append new option with data
         const apiTrainingData = async () => {
-            
             const response = await responseFunction('training')
     
             // Response verification
@@ -379,10 +322,8 @@ export function trainingFunction(row) {
         
         apiTrainingData()
 
-
         formModal.appendChild(createForm);
         manageContent.appendChild(formModal);
-
 
         if (!document.querySelector('.managecontent.deletedata')) {
             // If the .managecontent.deletedata not exist -> show the managecontetn delete modal
@@ -435,13 +376,10 @@ export function trainingFunction(row) {
                     setTimeout( () => {
                         document.querySelector('.infomodal').remove();
                     }, 3000); 
-                }
-
-            }
-            deleteData()
-        })
-
-
+                };
+            };
+            deleteData();
+        });
     }); 
 
     // Append {UPDATE CREATE DELETE}

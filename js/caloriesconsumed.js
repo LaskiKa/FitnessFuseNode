@@ -2,6 +2,7 @@
 import { today, baseModal } from './views';
 import { createChartwithApiData, chartModalFunction } from './chartFunction';
 import { createFunction, deleteFunction, responseFunction, updateFunction } from './tools';
+import { caloriesConsumedCreateFormTemplate, caloriesConsumedDeleteFormTemplate, caloriesConsumedUpdateFormTemplate } from './htmlTemplates';
 
 
 export function caloriesConsumedFunction(row) {
@@ -33,36 +34,7 @@ export function caloriesConsumedFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'update');
-        createForm.innerHTML = `
-        <label>Select data: </label>
-        <select id='selectdata'>
-        </select>
-
-        <label>Calories Consumed:</label>
-        <input type="number" id="kcal" name="kcal" required>
-
-        <label>Meal:</label>
-        <input type="text" id="meal" name="meal" required>
-
-
-        <label>Protein:</label>
-        <input type="number" id="protein" name="protein" step="0.01" required>
-
-        <label>Carbs</label>
-        <input type="number" id="carbs" name="carbs" step="0.01" required>
-
-        <label>Fat:</label>
-        <input type="number" id="fat" name="fat" step="0.01" required>
-
-        <label>Measurement date:</label>
-        <input type="date" id="measurement_date" name="measurement_date" required>
-
-        <label>Measurement time:</label>
-        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
-        
-        <button type="submit" id="submit">Update</button>
-
-        `
+        createForm.innerHTML = caloriesConsumedUpdateFormTemplate;
 
         // Event listener - after selecting data to update fill other fields in form
         createForm.querySelector('select').addEventListener('click', () => {
@@ -216,31 +188,7 @@ export function caloriesConsumedFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'create');
-        createForm.innerHTML = `
-        <label>Calories Consumed:</label>
-        <input type="number" id="kcal" name="kcal" required>
-
-        <label>Meal:</label>
-        <input type="text" id="meal" name="meal" required>
-
-        <label>Protein:</label>
-        <input type="number" id="protein" name="protein" step="0.01" required>
-
-        <label>Carbs:</label>
-        <input type="number" id="carbs" name="carbs" step="0.01" required>
-
-        <label>Fat:</label>
-        <input type="number" id="fat" name="fat" step="0.01" required>
-
-        <label>Measurement date:</label>
-        <input type="date" id="measurement_date" name="measurement_date" required>
-
-        <label>Measurement time:</label>
-        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
-        
-        <button type="submit" id="submit">Submit</button>
-
-        `
+        createForm.innerHTML = caloriesConsumedCreateFormTemplate;
         createForm.querySelector('#measurement_date').value = now[0];
         createForm.querySelector('#measurement_time').value = now[1];
         
@@ -329,14 +277,7 @@ export function caloriesConsumedFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'update');
-        createForm.innerHTML = `
-        <label>Select data: </label>
-        <select id='selectdata'>
-        </select>
-
-        <button type="submit" id="delete">Delete</button>
-
-        `
+        createForm.innerHTML = caloriesConsumedDeleteFormTemplate;
 
         // SELECT - append new option with data
         const apiCaloriesData = async () => {
@@ -396,7 +337,7 @@ export function caloriesConsumedFunction(row) {
                     // Destroy chart if exist
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
-                    }
+                    };
                     createChartwithApiData('calorieseaten', 'line', 'Consumed calories by date',
                                             {type: 'category'}, 
                                             ['kcal', 1], 

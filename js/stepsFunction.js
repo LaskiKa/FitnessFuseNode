@@ -160,16 +160,11 @@ export function stepsFunction(row) {
                         document.querySelector('.infomodal').remove();
                     }, 3000);
                 }
-            }
-
+            };
             updateStepsData();
-
         });
-
     });   
-
     // STEPS MANAGE: CREATE
-
     const create = document.createElement('div');
     create.classList.add('manage','create');
     create.textContent='create';
@@ -203,7 +198,6 @@ export function stepsFunction(row) {
         formModal.appendChild(createForm);
         manageContent.appendChild(formModal);
         
-
         if (!document.querySelector('.managecontent.create')) {
             // If the .managecontent.update not exist -> show the managecontetn update modal
             document.querySelectorAll('.managecontent').forEach((element) => {
@@ -219,17 +213,13 @@ export function stepsFunction(row) {
             const formdata = new FormData(event.target)
             const todatatime = `${formdata.get('measurement_date')}T${formdata.get('measurement_time')}`
 
-            const token = sessionStorage.getItem('token')
-            
-
             // POST - Add steps api
             const apiaddsteps = async () => {
 
                 const body = {
                         'steps': formdata.get('steps'),
                         'measurement_date': todatatime
-                }
-
+                };
                 const response = await createFunction('steps', body)
     
                 if (response.ok) {
@@ -249,7 +239,7 @@ export function stepsFunction(row) {
                     // Destroy chart if exist
                     if (window.dataChart != null) {
                         window.dataChart.destroy()
-                    }
+                    };
 
                     createChartwithApiData('steps', 'bar', 'Steps by date', 
                                             {type: 'time',
@@ -267,13 +257,11 @@ export function stepsFunction(row) {
                 } else {
                     const error = response.json()
                     console.log('Error: ', error );
-                }
+                };
 
-            }
+            };
             apiaddsteps();
-
-        })
-
+        });
     });
 
     // STEPS MANAGE: DELETE
@@ -304,14 +292,12 @@ export function stepsFunction(row) {
         const apiStepsData = async () => {
 
             const response = await responseFunction('steps');
-    
             // Response verification
             if (response.ok) {
                 const stepsData = await response.json()
                 const sortedStepsData = stepsData.sort((a,b)=> new Date(b.measurement_date) - new Date(a.measurement_date));
                 
                 // Append select with meseaurment data
-
                 sortedStepsData.forEach(element => {
                     const option = document.createElement('option');
                     const datetime = new Date (element.measurement_date)
@@ -323,21 +309,15 @@ export function stepsFunction(row) {
                     createForm.querySelector('select').appendChild(option);
 
                 });
-
-    
             } else {
                 // Error
                 const error = await response.json();
                 console.log('Error: ', error);
-            }
+            };
         };
-        
-        apiStepsData()
-
-
+        apiStepsData();
         formModal.appendChild(createForm);
         manageContent.appendChild(formModal);
-
 
         if (!document.querySelector('.managecontent.deletedata')) {
             // If the .managecontent.deletedata not exist -> show the managecontetn delete modal
@@ -355,7 +335,6 @@ export function stepsFunction(row) {
                 const response = await deleteFunction('steps', id);
 
                 if (response.ok) {
-
                     const infoModal = document.createElement('div');
                     infoModal.classList.add('infomodal', 'success');
 
@@ -387,22 +366,16 @@ export function stepsFunction(row) {
                     setTimeout( () => {
                         document.querySelector('.infomodal').remove();
                     }, 3000); 
-                }
-
-            }
-            deletedata()
-        })
-
-
-    }); 
-
+                };
+            };
+            deletedata();
+        });
+    });
     // Append UPDATE CREATE DELETE
     manageModal.appendChild(update);
     manageModal.appendChild(create);
     manageModal.appendChild(deleteData);
     stepsModal.firstChild.appendChild(manageModal);
-
-
     // // CHART
     const chartModal = chartModalFunction();
     
@@ -413,10 +386,8 @@ export function stepsFunction(row) {
                                     time: {unit: 'day'}
                                 },
                                 ['steps', 1], ['',3]);
-    })
-
+    });
 
     modalArray.push(stepsModal, chartModal);
-    
     return modalArray
 };

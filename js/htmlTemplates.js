@@ -90,3 +90,39 @@ export const caloriesConsumedDeleteFormTemplate = `
 
         <button type="submit" id="delete">Delete</button>
 `
+export const caloriesUpdateFormTemplate = `
+        <label>Select data: </label>
+        <select id='selectdata'>
+        </select>
+
+        <label>Calories:</label>
+        <input type="number" id="kcal" name="kcal" required>
+
+        <label>Measurement date:</label>
+        <input type="date" id="measurement_date" name="measurement_date" required>
+
+        <label>Measurement time:</label>
+        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
+        
+        <button type="submit" id="submit">Update</button>
+`
+
+export const caloriesCreateFormTemplate = `
+        <label>Calories:</label>
+        <input type="number" id="kcal" name="kcal" required>
+
+        <label>Measurement date:</label>
+        <input type="date" id="measurement_date" name="measurement_date" required>
+
+        <label>Measurement time:</label>
+        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
+        
+        <button type="submit" id="submit">Submit</button>
+`
+export const caloriesDeleteFormTemplate = `
+        <label>Select data: </label>
+        <select id='selectdata'>
+        </select>
+
+        <button type="submit" id="delete">Delete</button>
+`

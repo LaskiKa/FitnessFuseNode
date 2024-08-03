@@ -1,6 +1,7 @@
 import { today, baseModal } from './views';
 import { createChartwithApiData, chartModalFunction } from './chartFunction';
 import { createFunction, deleteFunction, responseFunction, updateFunction } from './tools';
+import { caloriesCreateFormTemplate, caloriesDeleteFormTemplate, caloriesUpdateFormTemplate } from './htmlTemplates';
 
 
 export function caloriesFunction(row) {
@@ -32,23 +33,7 @@ export function caloriesFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'update');
-        createForm.innerHTML = `
-        <label>Select data: </label>
-        <select id='selectdata'>
-        </select>
-
-        <label>Calories:</label>
-        <input type="number" id="kcal" name="kcal" required>
-
-        <label>Measurement date:</label>
-        <input type="date" id="measurement_date" name="measurement_date" required>
-
-        <label>Measurement time:</label>
-        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
-        
-        <button type="submit" id="submit">Update</button>
-
-        `
+        createForm.innerHTML = caloriesUpdateFormTemplate;
 
         // Event listener - after selecting data to update fill other fields in form
         createForm.querySelector('select').addEventListener('click', () => {
@@ -67,8 +52,6 @@ export function caloriesFunction(row) {
             caloriestInput.value = measurementDataWeight;
             dateInput.value = measurementDataDate;
             tiemInput.value = measurementDataTime;
-
-
         });
 
         // SELECT - append new option with data
@@ -121,7 +104,6 @@ export function caloriesFunction(row) {
             const formData = new FormData(event.target)
             const meseaurmentId = parseInt(document.querySelector('select').value)
             const newDate = `${formData.get('measurement_date')}T${formData.get('measurement_time')}`
-            const token = sessionStorage.getItem('token');
 
             // PUT - update calories
             const updatecaloriesdata = async() => {
@@ -180,19 +162,7 @@ export function caloriesFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'create');
-        createForm.innerHTML = `
-        <label>Calories:</label>
-        <input type="number" id="kcal" name="kcal" required>
-
-        <label>Measurement date:</label>
-        <input type="date" id="measurement_date" name="measurement_date" required>
-
-        <label>Measurement time:</label>
-        <input type="time" step=1 id="measurement_time" name="measurement_time" required>
-        
-        <button type="submit" id="submit">Submit</button>
-
-        `
+        createForm.innerHTML = caloriesCreateFormTemplate;
         createForm.querySelector('#measurement_date').value = now[0];
         createForm.querySelector('#measurement_time').value = now[1];
         
@@ -213,8 +183,6 @@ export function caloriesFunction(row) {
 
             const formData = new FormData(event.target)
             const toDataTime = `${formData.get('measurement_date')}T${formData.get('measurement_time')}`
-
-            const token = sessionStorage.getItem('token')
             
             // POST - Add calories api
             const apiAddCalories = async () => {
@@ -278,14 +246,7 @@ export function caloriesFunction(row) {
 
         const createForm = document.createElement('form');
         createForm.classList.add('form', 'update');
-        createForm.innerHTML = `
-        <label>Select data: </label>
-        <select id='selectdata'>
-        </select>
-
-        <button type="submit" id="delete">Delete</button>
-
-        `
+        createForm.innerHTML = caloriesDeleteFormTemplate;
 
         // SELECT - append new option with data
         const apiCaloriesData = async () => {    

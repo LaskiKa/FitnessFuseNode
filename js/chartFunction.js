@@ -2,6 +2,7 @@ import  Chart, { LineElement, scales }  from 'chart.js/auto';
 import { baseModal } from './views';
 import 'chartjs-adapter-date-fns';
 import { durationToMilliseconds, methodFunction, responseFunction } from './tools';
+import { chartFilterModalTemplate } from './htmlTemplates';
 
 export function chartModalFunction() {
     // Create chart html modal
@@ -14,12 +15,7 @@ export function chartModalFunction() {
 
     const filterModal = document.createElement('div');
     filterModal.classList.add('filtermodal');
-    filterModal.innerHTML = `
-    <div class='filtercontent'>Start: <input id='start' type="date"> </div>
-    <div class='filtercontent' >End: <input id='end' type="date"> </div>
-    <button class='filtercontent' id='submit' >Filter</button>
-    
-    `
+    filterModal.innerHTML = chartFilterModalTemplate;
     chartModal.firstChild.appendChild(canvas);
     chartModal.firstChild.appendChild(filterModal)
 

@@ -126,3 +126,9 @@ export const caloriesDeleteFormTemplate = `
 
         <button type="submit" id="delete">Delete</button>
 `
+
+export const chartFilterModalTemplate = `
+    <div class='filtercontent'>Start: <input id='start' type="date"> </div>
+    <div class='filtercontent' >End: <input id='end' type="date"> </div>
+    <button class='filtercontent' id='submit' >Filter</button>
+`

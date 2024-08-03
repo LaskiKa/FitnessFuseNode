@@ -1,24 +1,9 @@
 import  Chart, { LineElement, scales }  from 'chart.js/auto';
 import { baseModal } from './views';
 import 'chartjs-adapter-date-fns';
-import { mapProperty, miliSecondsToHours, durationToMilliseconds, meseaurmentDate, methodFunction } from './tools';
-
-
-
-// ROZBUDOWAĆ 
-    //                 type: 'line',
-    //                 options: {
-    //                     responsive: true,
-    //                     scales: {
-    //                         y: {
-    //                             beginAtZero: true,
-    //                         }
-    //                     },
-    //                 },
-
+import { durationToMilliseconds, methodFunction, responseFunction } from './tools';
 
 export function chartModalFunction() {
-
     // Create chart html modal
     const chartModal = baseModal(true);
     chartModal.firstChild.classList.add('chartmodal');
@@ -39,23 +24,14 @@ export function chartModalFunction() {
     chartModal.firstChild.appendChild(filterModal)
 
     return chartModal
-}
+};
 
 export async function createChartwithApiData(path, chartType, chartLabel,
                                             xScale, 
                                             [property1, dataMethodNumber], 
                                             [property2, labelsMethodNumber]) {
 
-    const token = sessionStorage.getItem('token');
-    const response = await fetch(`http://127.0.0.1:8000/${path}/`, {
-        mode: 'cors',
-        credentials: "same-origin",
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Token ${token}`
-        }
-    });
-
+    const response = await responseFunction(path);
 
     //Response verification
         if(response.ok) {
@@ -89,19 +65,14 @@ export async function createChartwithApiData(path, chartType, chartLabel,
                 });
             
                 // Fill chart with filtered data
-                // window.dataChart.data.labels = result.map(row => row.measurement_date.setHours(0,0,0,0));
                 window.dataChart.data.labels = methodFunction(labelsMethodNumber, property2)(result)
-                // window.dataChart.data.datasets[0].data = method[dataMethodNumber](result)
                 window.dataChart.data.datasets[0].data = methodFunction(dataMethodNumber ,property1)(result)
                 window.dataChart.update();
-       
             });
-
             // IF CHART EXIST - DELETE
             if (window.dataChart != null) {
                 window.dataChart.destroy()
             };
-
             // CREATE CHART - create global variable with chart
             window.dataChart = new Chart(
                 document.querySelector('#canvas'),
@@ -114,24 +85,13 @@ export async function createChartwithApiData(path, chartType, chartLabel,
                                 beginAtZero: true,
                             },
                             x: xScale
-                            // {
-                            //     type: 'time',
-                            //     time: {
-                            //         unit: 'day'
-                            //     }
-                            // }
                         }
                     },
                     data: {
-                        // labels: sortedResponseData.map(row => row.measurement_date.setHours(0,0,0,0)),
-                        // labels: method[labelsMethodNumber](property2)(sortedResponseData),
                         labels: methodFunction(labelsMethodNumber, property2)(sortedResponseData),
-                        // labels: sortedResponseData.map(row => row.measurement_date),
                         datasets: [
                             {
                                 label: chartLabel,
-                                // data: mapProperty(property)(sortedResponseData),
-                                // data: method[dataMethodNumber](property1)(sortedResponseData),
                                 data: methodFunction(dataMethodNumber ,property1)(sortedResponseData),
                                 backgroundColor: '#4d3ef9',
                                 borderColor: '#4d3ef9'
@@ -144,7 +104,5 @@ export async function createChartwithApiData(path, chartType, chartLabel,
         } else {
             const error = await response.json();
             console.log('Error: ', error);
-        };
-        console.log(window.dataChart);
-    
-}
+        };    
+};

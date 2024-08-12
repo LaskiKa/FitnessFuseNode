@@ -112,6 +112,45 @@ export async function authenticationFunction(url, body) {
             'Authorization': `Token ${token}`
         },
         body: JSON.stringify(body)   
-    })
+    });
     return response
+};
+
+export function filterFunction(eventListType, sortedResponseData) {
+
+    const res = document.querySelector('#submit').addEventListener(`${eventListType}`, () => {
+        const start = new Date(document.querySelector('#start').value).setHours(0,0,0,0);
+        const end = new Date(document.querySelector('#end').value).setHours(0,0,0,0);
+
+        const result = sortedResponseData.filter(element => {var date = new Date(element.measurement_date).setHours(0,0,0,0);
+            return (start <= date && date <= end);
+
+        
+        });
+    });
+};
+
+export function filterFunction1(sortedResponseData) {
+    // Take dates from inputs
+    const start = new Date(document.querySelector('#start').value).setHours(0,0,0,0);
+    const end = new Date(document.querySelector('#end').value).setHours(0,0,0,0);
+    
+    // Filter by dates
+    const result = sortedResponseData.filter(element => {
+        const date = new Date(element.measurement_date).setHours(0,0,0,0);
+        return (start <= date && date <= end);
+    });
+    return result
+};
+
+export function lastSevenDays(filterModal) {
+    const today = new Date()
+    const sevenDaysBefore = new Date();
+    sevenDaysBefore.setDate(today.getDate() - 7);
+
+    const start = filterModal.querySelector('#start')
+    const end = filterModal.querySelector('#end')
+    
+    end.value = today.toISOString().split('T')[0];
+    start.value = sevenDaysBefore.toISOString().split('T')[0];
 };

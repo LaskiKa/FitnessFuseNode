@@ -1,7 +1,7 @@
 import  Chart, { LineElement, scales }  from 'chart.js/auto';
 import { baseModal } from './views';
 import 'chartjs-adapter-date-fns';
-import { durationToMilliseconds, methodFunction, responseFunction } from './tools';
+import { durationToMilliseconds, filterFunction1, lastSevenDays, methodFunction, responseFunction } from './tools';
 import { chartFilterModalTemplate } from './htmlTemplates';
 
 export function chartModalFunction() {
@@ -13,9 +13,13 @@ export function chartModalFunction() {
     canvas.classList.add('canvas');
     canvas.setAttribute('id', 'canvas'); // ID canvasa - tutaj zmiana
 
+    // Add filter modal
     const filterModal = document.createElement('div');
     filterModal.classList.add('filtermodal');
     filterModal.innerHTML = chartFilterModalTemplate;
+    // Set filter dates for last 7 days: today & today-7
+    lastSevenDays(filterModal);
+
     chartModal.firstChild.appendChild(canvas);
     chartModal.firstChild.appendChild(filterModal)
 
@@ -50,25 +54,23 @@ export async function createChartwithApiData(path, chartType, chartLabel,
                 });
             };
             
+            const result = filterFunction1(sortedResponseData);
 
-            // Filter modal by dates - Event Listener
+            // #2 Filter modal by dates selected by user - Event Listener
             document.querySelector('#submit').addEventListener('click', () => {
-                const start = new Date(document.querySelector('#start').value).setHours(0,0,0,0);
-                const end = new Date(document.querySelector('#end').value).setHours(0,0,0,0);
-                
-                const result = sortedResponseData.filter(element => {var date = new Date(element.measurement_date).setHours(0,0,0,0);
-                    return (start <= date && date <= end);
-                });
+                const result = filterFunction1(sortedResponseData);
             
-                // Fill chart with filtered data
-                window.dataChart.data.labels = methodFunction(labelsMethodNumber, property2)(result)
-                window.dataChart.data.datasets[0].data = methodFunction(dataMethodNumber ,property1)(result)
+                // Update chart based on filtered dates
+                window.dataChart.data.labels = methodFunction(labelsMethodNumber, property2)(result);
+                window.dataChart.data.datasets[0].data = methodFunction(dataMethodNumber, property1)(result);
                 window.dataChart.update();
             });
+
             // IF CHART EXIST - DELETE
             if (window.dataChart != null) {
                 window.dataChart.destroy()
             };
+
             // CREATE CHART - create global variable with chart
             window.dataChart = new Chart(
                 document.querySelector('#canvas'),
@@ -84,11 +86,11 @@ export async function createChartwithApiData(path, chartType, chartLabel,
                         }
                     },
                     data: {
-                        labels: methodFunction(labelsMethodNumber, property2)(sortedResponseData),
+                        labels: methodFunction(labelsMethodNumber, property2)(result),
                         datasets: [
                             {
                                 label: chartLabel,
-                                data: methodFunction(dataMethodNumber ,property1)(sortedResponseData),
+                                data: methodFunction(dataMethodNumber ,property1)(result),
                                 backgroundColor: '#4d3ef9',
                                 borderColor: '#4d3ef9'
                             }

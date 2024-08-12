@@ -333,7 +333,7 @@ export function  weightFunction(row) {
     weightModal.firstChild.appendChild(manageModal);
 
     // CHART
-    const chartModal = chartModalFunction();
+    const chartModal =  chartModalFunction();
     
     // Get weight data after clicking weight navbtn
     document.querySelector('.navbtn.weight').addEventListener('click', () => {

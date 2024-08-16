@@ -116,21 +116,7 @@ export async function authenticationFunction(url, body) {
     return response
 };
 
-export function filterFunction(eventListType, sortedResponseData) {
-
-    const res = document.querySelector('#submit').addEventListener(`${eventListType}`, () => {
-        const start = new Date(document.querySelector('#start').value).setHours(0,0,0,0);
-        const end = new Date(document.querySelector('#end').value).setHours(0,0,0,0);
-
-        const result = sortedResponseData.filter(element => {var date = new Date(element.measurement_date).setHours(0,0,0,0);
-            return (start <= date && date <= end);
-
-        
-        });
-    });
-};
-
-export function filterFunction1(sortedResponseData) {
+export function filterFunction(sortedResponseData) {
     // Take dates from inputs
     const start = new Date(document.querySelector('#start').value).setHours(0,0,0,0);
     const end = new Date(document.querySelector('#end').value).setHours(0,0,0,0);
@@ -144,9 +130,10 @@ export function filterFunction1(sortedResponseData) {
 };
 
 export function lastSevenDays(filterModal) {
+    // Set data input on last 7 days 
     const today = new Date()
     const sevenDaysBefore = new Date();
-    sevenDaysBefore.setDate(today.getDate() - 7);
+    sevenDaysBefore.setDate(today.getDate() - 6);
 
     const start = filterModal.querySelector('#start')
     const end = filterModal.querySelector('#end')

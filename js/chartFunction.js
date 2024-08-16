@@ -1,7 +1,7 @@
 import  Chart, { LineElement, scales }  from 'chart.js/auto';
 import { baseModal } from './views';
 import 'chartjs-adapter-date-fns';
-import { durationToMilliseconds, filterFunction1, lastSevenDays, methodFunction, responseFunction } from './tools';
+import { durationToMilliseconds, filterFunction, lastSevenDays, methodFunction, responseFunction } from './tools';
 import { chartFilterModalTemplate } from './htmlTemplates';
 
 export function chartModalFunction() {
@@ -54,11 +54,11 @@ export async function createChartwithApiData(path, chartType, chartLabel,
                 });
             };
             
-            const result = filterFunction1(sortedResponseData);
+            const result = filterFunction(sortedResponseData);
 
             // #2 Filter modal by dates selected by user - Event Listener
             document.querySelector('#submit').addEventListener('click', () => {
-                const result = filterFunction1(sortedResponseData);
+                const result = filterFunction(sortedResponseData);
             
                 // Update chart based on filtered dates
                 window.dataChart.data.labels = methodFunction(labelsMethodNumber, property2)(result);
